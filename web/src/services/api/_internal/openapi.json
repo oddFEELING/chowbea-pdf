@@ -1,0 +1,154 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Chowbea PDF API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/pdf/compress": {
+      "post": {
+        "tags": [
+          "pdf"
+        ],
+        "summary": "Compress one or more PDF files",
+        "description": "Compress the uploaded PDFs and stream back the result.\n\nA single file is returned as a PDF; multiple files are returned as a ZIP archive.\nAggregate size stats are exposed via response headers so the UI can show savings.",
+        "operationId": "compress_pdf_compress_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_compress_pdf_compress_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "meta"
+        ],
+        "summary": "Liveness check",
+        "description": "Return a simple status payload used by load balancers and uptime checks.",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Body_compress_pdf_compress_post": {
+        "properties": {
+          "files": {
+            "items": {
+              "type": "string",
+              "format": "binary"
+            },
+            "type": "array",
+            "title": "Files",
+            "description": "One or more PDF files to compress."
+          },
+          "quality": {
+            "$ref": "#/components/schemas/CompressionQuality",
+            "description": "Compression preset; 'screen' is smallest, 'prepress' is highest quality.",
+            "default": "ebook"
+          }
+        },
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "title": "Body_compress_pdf_compress_post"
+      },
+      "CompressionQuality": {
+        "type": "string",
+        "enum": [
+          "screen",
+          "ebook",
+          "printer",
+          "prepress"
+        ],
+        "title": "CompressionQuality",
+        "description": "Quality presets that map directly to Ghostscript's -dPDFSETTINGS values.\n\nLower quality means smaller files: `screen` is the most aggressive,\n`prepress` preserves the most detail."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

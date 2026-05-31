@@ -1,0 +1,17 @@
+[project]
+name = "chowbea-pdf-api"
+version = "0.1.0"
+description = "FastAPI backend for batch PDF actions (compression and more)."
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi==0.115.6",
+    "uvicorn[standard]==0.34.0",
+    "python-multipart==0.0.20",
+    "pydantic-settings==2.7.1",
+    "pikepdf==9.5.2",
+]
+
+# No [build-system]: this is an application, not a distributable package, so uv
+# installs only the dependencies and we run uvicorn against the app/ directory.
+[tool.uv]
+package = false

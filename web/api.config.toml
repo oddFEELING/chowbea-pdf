@@ -1,0 +1,17 @@
+# Chowbea Axios Configuration
+# Generates a typed Axios client from the FastAPI OpenAPI spec.
+
+api_endpoint = "http://localhost:8000/openapi.json"
+poll_interval_ms = 20000
+
+[output]
+folder = "src/services/api"
+
+[instance]
+base_url_env = "VITE_API_URL"
+env_accessor = "import.meta.env"
+with_credentials = true
+timeout = 60000
+
+[watch]
+debug = false
