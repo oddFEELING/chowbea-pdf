@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;}
+    body{margin:0;font-family:'Hanken Grotesk',sans-serif;}
+  </style>
+</helmet>
+
+<!-- ============ HUB — BOLD BLOCKS ============ -->
+<div style="position:absolute;left:0px;top:0px;width:1280px;">
+  <div data-drags-parent="1" style="font:600 13px 'Hanken Grotesk',sans-serif;color:#9a8c7c;letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px;">Hub</div>
+  <div style="width:1280px;background:#FFF3E2;border-radius:28px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden;padding:34px 56px 56px;">
+
+    <!-- top bar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:40px;height:40px;border-radius:11px;background:#F2922B;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#211A12" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:19px;height:19px;"><path d="M6 3h8l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+        </div>
+        <div style="font:800 21px 'Bricolage Grotesque',sans-serif;color:#211A12;">Chowbea PDF</div>
+      </div>
+      <div style="font:800 14px 'Hanken Grotesk',sans-serif;color:#211A12;background:#fff;border:2.5px solid #211A12;border-radius:999px;padding:9px 20px;box-shadow:3px 3px 0 #211A12;">SIGN IN</div>
+    </div>
+
+    <!-- hero -->
+    <div style="margin-top:46px;display:flex;align-items:center;justify-content:space-between;gap:36px;">
+      <div style="font:800 62px/.98 'Bricolage Grotesque',sans-serif;color:#211A12;letter-spacing:-.02em;text-transform:uppercase;">Pick a tool.<br><span style="color:#F2922B;-webkit-text-stroke:2px #211A12;">Drop a PDF.</span></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:14px;max-width:330px;">
+        <div style="font:600 17px/1.45 'Hanken Grotesk',sans-serif;color:#5b5043;">No accounts, no clutter — just the eight things you actually do to a PDF.</div>
+        <div style="font:800 16px 'Hanken Grotesk',sans-serif;color:#fff;background:#211A12;border-radius:999px;padding:14px 28px;box-shadow:4px 4px 0 #F2922B;display:flex;align-items:center;gap:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>UPLOAD PDF</div>
+      </div>
+    </div>
+
+    <!-- tiles -->
+    <div style="margin-top:44px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;">
+      <div style="background:#fff;border:2.5px solid #211A12;border-radius:18px;padding:24px;box-shadow:5px 5px 0 #211A12;display:flex;flex-direction:column;gap:16px;">
+        <div style="width:52px;height:52px;border-radius:13px;background:#FBE7CE;border:2.5px solid #211A12;color:#211A12;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px;"><rect x="3" y="11" width="18" height="10" rx="2.5"/><path d="M7 11V7a5 5 0 0 1 9.6-1.8"/></svg></div>
+        <div style="font:800 22px 'Bricolage Grotesque',sans-serif;color:#211A12;">Unlock</div>
+        <div style="font:600 14px 'Hanken Grotesk',sans-serif;color:#6b5f50;">Remove a password</div>
+      </div>
+      <div style="background:#fff;border:2.5px solid #211A12;border-radius:18px;padding:24px;box-shadow:5px 5px 0 #211A12;display:flex;flex-direction:column;gap:16px;">
+        <div style="width:52px;height:52px;border-radius:13px;background:#FBE7CE;border:2.5px solid #211A12;color:#211A12;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px;"><rect x="3" y="11" width="18" height="10" rx="2.5"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <div style="font:800 22px 'Bricolage Grotesque',sans-serif;color:#211A12;">Lock</div>
+        <div style="font:600 14px 'Hanken Grotesk',sans-serif;color:#6b5f50;">Add a password</div>
+      </div>
+      <div style="background:#F2922B;border:2.5px solid #211A12;border-radius:18px;padding:24px;box-shadow:5px 5px 0 #211A12;display:flex;flex-direction:column;gap:16px;">
+        <div style="width:52px;height:52px;border-radius:13px;background:#FFF8EF;border:2.5px solid #211A12;color:#211A12;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px;"><path d="M8 4l4 4 4-4"/><path d="M8 20l4-4 4 4"/><path d="M4 12h16"/></svg></div>
+        <div style="font:800 22px 'Bricolage Grotesque',sans-serif;color:#211A12;">Compress</div>
+        <div style="font:600 14px 'Hanken Grotesk',sans-serif;color:#5a4324;">Shrink file size</div>
+      </div>
+      <div style="background:#fff;border:2.5px solid #211A12;border-radius:18px;padding:24px;box-shadow:5px 5px 0 #211A12;display:flex;flex-direction:column;gap:16px;">
+        <div style="width:52px;height:52px;border-radius:13px;background:#FBE7CE;border:2.5px solid #211A12;color:#211A12;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px;"><path d="M4 8V6a2 2 0 0 1 2-2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M20 16v2a2 2 0 0 1-2 2h-2"/><path d="M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M8 10h8"/><path d="M8 14h5"/></svg></div>
+        <div style="font:800 22px 'Bricolage Grotesque',sans-serif;color:#211A12;">OCR</div>
+        <div style="font:600 14px 'Hanken Grotesk',sans-serif;color:#6b5f50;">Make text searchable</div>
+      </div>
+      <div style="background:#fff;border:2.5px solid #211A12;border-radius:18px;padding:24px;box-shadow:5px 5px 0 #211A12;display:flex;flex-direction:column;gap:16px;">
+        <div style="width:52px;height:52px;border-radius:13px;background:#FBE7CE;border:2.5px solid #211A12;color:#211A12;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px;"><rect x="3" y="3" width="13" height="13" rx="2.5"/><path d="M8 21h11a2 2 0 0 0 2-2V8"/></svg></div>
+        <div style="font:800 22px 'Bricolage Grotesque',sans-serif;color:#211A12;">Merge</div>
+        <div style="font:600 14px 'Hanken Grotesk',sans-serif;color:#6b5f50;">Combine PDFs</div>
+      </div>
+      <div style="background:#fff;border:2.5px solid #211A12;border-radius:18px;padding:24px;box-shadow:5px 5px 0 #211A12;display:flex;flex-direction:column;gap:16px;">
+        <div style="width:52px;height:52px;border-radius:13px;background:#FBE7CE;border:2.5px solid #211A12;color:#211A12;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px;"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M12 3v18" stroke-dasharray="2.5 3"/></svg></div>
+        <div style="font:800 22px 'Bricolage Grotesque',sans-serif;color:#211A12;">Split</div>
+        <div style="font:600 14px 'Hanken Grotesk',sans-serif;color:#6b5f50;">Separate pages</div>
+      </div>
+      <div style="background:#F2922B;border:2.5px solid #211A12;border-radius:18px;padding:24px;box-shadow:5px 5px 0 #211A12;display:flex;flex-direction:column;gap:16px;">
+        <div style="width:52px;height:52px;border-radius:13px;background:#FFF8EF;border:2.5px solid #211A12;color:#211A12;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px;"><path d="M4 8h13"/><path d="M14 5l3 3-3 3"/><path d="M20 16H7"/><path d="M10 13l-3 3 3 3"/></svg></div>
+        <div style="font:800 22px 'Bricolage Grotesque',sans-serif;color:#211A12;">Convert</div>
+        <div style="font:600 14px 'Hanken Grotesk',sans-serif;color:#5a4324;">To &amp; from Word, images</div>
+      </div>
+      <div style="background:#fff;border:2.5px solid #211A12;border-radius:18px;padding:24px;box-shadow:5px 5px 0 #211A12;display:flex;flex-direction:column;gap:16px;">
+        <div style="width:52px;height:52px;border-radius:13px;background:#FBE7CE;border:2.5px solid #211A12;color:#211A12;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px;"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 4v5h-5"/></svg></div>
+        <div style="font:800 22px 'Bricolage Grotesque',sans-serif;color:#211A12;">Rotate</div>
+        <div style="font:600 14px 'Hanken Grotesk',sans-serif;color:#6b5f50;">Rotate &amp; reorder pages</div>
+      </div>
+    </div>
+
+    <!-- buy me a coffee -->
+    <div style="margin-top:36px;display:flex;align-items:center;gap:28px;background:#211A12;border:2.5px solid #211A12;border-radius:22px;padding:30px 34px;box-shadow:6px 6px 0 #F2922B;">
+      <div style="width:72px;height:72px;border-radius:18px;background:#F2922B;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" fill="none" stroke="#211A12" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:38px;height:38px;"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9z"/><path d="M17 10h2a2.5 2.5 0 0 1 0 5h-2"/><path d="M8 2c-.5 1 .5 2 0 3M12 2c-.5 1 .5 2 0 3"/></svg></div>
+      <div style="flex:1;">
+        <div style="font:800 26px 'Bricolage Grotesque',sans-serif;color:#FFF3E2;">Chowbea is free &amp; ad-free</div>
+        <div style="font:600 15px 'Hanken Grotesk',sans-serif;color:#C9B89C;margin-top:4px;max-width:480px;">Your files never leave the browser. If Chowbea saved you a headache, buy me a coffee to keep the servers warm.</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+        <div style="font:800 15px 'Hanken Grotesk',sans-serif;color:#FFF3E2;background:transparent;border:2px solid #5a4a35;border-radius:12px;padding:12px 16px;">$3</div>
+        <div style="font:800 15px 'Hanken Grotesk',sans-serif;color:#211A12;background:#F2922B;border:2px solid #211A12;border-radius:12px;padding:12px 16px;">$5</div>
+        <div style="font:800 15px 'Hanken Grotesk',sans-serif;color:#FFF3E2;background:transparent;border:2px solid #5a4a35;border-radius:12px;padding:12px 16px;">$10</div>
+        <div style="font:800 16px 'Bricolage Grotesque',sans-serif;color:#211A12;background:#F2922B;border:2.5px solid #211A12;border-radius:12px;padding:13px 22px;display:flex;align-items:center;gap:9px;box-shadow:4px 4px 0 #FFF3E2;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:19px;height:19px;"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9z"/><path d="M17 10h2a2.5 2.5 0 0 1 0 5h-2"/><path d="M8 2c-.5 1 .5 2 0 3M12 2c-.5 1 .5 2 0 3"/></svg>Buy me a coffee</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FOCUSED FLOW — LOCK PDF (Bold Blocks) ============ -->
+<sc-if value="{{ showFlow }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;left:1360px;top:0px;width:1280px;">
+  <div data-drags-parent="1" style="font:600 13px 'Hanken Grotesk',sans-serif;color:#9a8c7c;letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px;">Focused flow · Lock PDF</div>
+  <div style="width:1280px;background:#FFF3E2;border-radius:28px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden;padding:34px 56px 56px;">
+
+    <!-- top bar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:40px;height:40px;border-radius:11px;background:#F2922B;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#211A12" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:19px;height:19px;"><path d="M6 3h8l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+        </div>
+        <div style="font:800 21px 'Bricolage Grotesque',sans-serif;color:#211A12;">Chowbea PDF</div>
+      </div>
+      <div style="font:800 14px 'Hanken Grotesk',sans-serif;color:#211A12;background:#fff;border:2.5px solid #211A12;border-radius:999px;padding:9px 20px;box-shadow:3px 3px 0 #211A12;">SIGN IN</div>
+    </div>
+
+    <!-- back + heading -->
+    <div style="margin-top:34px;display:inline-flex;align-items:center;gap:8px;font:800 13px 'Hanken Grotesk',sans-serif;letter-spacing:.04em;color:#211A12;background:#fff;border:2.5px solid #211A12;border-radius:999px;padding:8px 16px;box-shadow:3px 3px 0 #211A12;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M15 18l-6-6 6-6"/></svg>ALL TOOLS
+    </div>
+    <div style="margin-top:20px;display:flex;align-items:center;gap:18px;">
+      <div style="width:60px;height:60px;border-radius:15px;background:#F2922B;border:2.5px solid #211A12;color:#211A12;display:flex;align-items:center;justify-content:center;box-shadow:4px 4px 0 #211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:30px;height:30px;"><rect x="3" y="11" width="18" height="10" rx="2.5"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <div>
+        <div style="font:800 44px 'Bricolage Grotesque',sans-serif;color:#211A12;letter-spacing:-.01em;text-transform:uppercase;">Lock PDF</div>
+        <div style="font:600 16px 'Hanken Grotesk',sans-serif;color:#5b5043;margin-top:2px;">Add a password so only the right people can open it.</div>
+      </div>
+    </div>
+
+    <!-- two column -->
+    <div style="margin-top:30px;display:grid;grid-template-columns:360px 1fr;gap:28px;align-items:start;">
+
+      <!-- file card -->
+      <div style="background:#fff;border:2.5px solid #211A12;border-radius:20px;padding:22px;box-shadow:6px 6px 0 #211A12;">
+        <div style="position:relative;height:200px;border-radius:14px;background:#FFF3E2;border:2px solid #211A12;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+          <div style="width:120px;height:152px;background:#fff;border:2px solid #211A12;border-radius:6px;padding:16px 14px;">
+            <div style="width:46px;height:8px;border-radius:4px;background:#F2922B;"></div>
+            <div style="width:100%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:14px;"></div>
+            <div style="width:90%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:8px;"></div>
+            <div style="width:96%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:8px;"></div>
+            <div style="width:70%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:8px;"></div>
+            <div style="width:84%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:8px;"></div>
+          </div>
+          <div style="position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:10px;background:#F2922B;border:2.5px solid #211A12;color:#211A12;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+        </div>
+        <div style="margin-top:18px;font:800 18px 'Bricolage Grotesque',sans-serif;color:#211A12;">Q3-Report.pdf</div>
+        <div style="margin-top:4px;font:600 14px 'Hanken Grotesk',sans-serif;color:#8a7d6c;">2.4 MB · 18 pages</div>
+        <div style="margin-top:16px;display:inline-block;font:800 13px 'Hanken Grotesk',sans-serif;color:#211A12;border:2px solid #211A12;border-radius:999px;padding:7px 16px;">REPLACE FILE</div>
+      </div>
+
+      <!-- settings -->
+      <div style="background:#fff;border:2.5px solid #211A12;border-radius:20px;padding:30px;box-shadow:6px 6px 0 #211A12;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div>
+            <div style="font:800 13px 'Hanken Grotesk',sans-serif;letter-spacing:.03em;color:#211A12;margin-bottom:8px;text-transform:uppercase;">New password</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;border:2.5px solid #211A12;border-radius:12px;padding:13px 14px;background:#FFF8EF;">
+              <span style="font:700 16px 'Hanken Grotesk',sans-serif;color:#211A12;letter-spacing:.18em;">••••••••••</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#211A12" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+          </div>
+          <div>
+            <div style="font:800 13px 'Hanken Grotesk',sans-serif;letter-spacing:.03em;color:#211A12;margin-bottom:8px;text-transform:uppercase;">Confirm password</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;border:2.5px solid #211A12;border-radius:12px;padding:13px 14px;background:#FFF8EF;">
+              <span style="font:700 16px 'Hanken Grotesk',sans-serif;color:#211A12;letter-spacing:.18em;">••••••••••</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#211A12" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- strength -->
+        <div style="margin-top:14px;display:flex;align-items:center;gap:10px;">
+          <div style="display:flex;gap:6px;flex:1;">
+            <div style="height:8px;flex:1;border-radius:3px;background:#F2922B;border:1.5px solid #211A12;"></div>
+            <div style="height:8px;flex:1;border-radius:3px;background:#F2922B;border:1.5px solid #211A12;"></div>
+            <div style="height:8px;flex:1;border-radius:3px;background:#F2922B;border:1.5px solid #211A12;"></div>
+            <div style="height:8px;flex:1;border-radius:3px;background:#fff;border:1.5px solid #211A12;"></div>
+          </div>
+          <span style="font:800 13px 'Hanken Grotesk',sans-serif;color:#211A12;">STRONG</span>
+        </div>
+
+        <div style="height:2.5px;background:#211A12;margin:26px 0;border-radius:2px;"></div>
+
+        <!-- permissions -->
+        <div style="font:800 16px 'Bricolage Grotesque',sans-serif;color:#211A12;margin-bottom:16px;">Permissions</div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span style="font:600 15px 'Hanken Grotesk',sans-serif;color:#211A12;">Allow printing</span>
+            <div style="width:50px;height:28px;border-radius:999px;background:#F2922B;border:2.5px solid #211A12;padding:2px;display:flex;justify-content:flex-end;align-items:center;"><div style="width:20px;height:20px;border-radius:50%;background:#211A12;"></div></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span style="font:600 15px 'Hanken Grotesk',sans-serif;color:#211A12;">Allow copying text</span>
+            <div style="width:50px;height:28px;border-radius:999px;background:#fff;border:2.5px solid #211A12;padding:2px;display:flex;justify-content:flex-start;align-items:center;"><div style="width:20px;height:20px;border-radius:50%;background:#211A12;"></div></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span style="font:600 15px 'Hanken Grotesk',sans-serif;color:#211A12;">Allow editing &amp; annotations</span>
+            <div style="width:50px;height:28px;border-radius:999px;background:#fff;border:2.5px solid #211A12;padding:2px;display:flex;justify-content:flex-start;align-items:center;"><div style="width:20px;height:20px;border-radius:50%;background:#211A12;"></div></div>
+          </div>
+        </div>
+
+        <!-- encryption -->
+        <div style="margin-top:22px;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font:600 15px 'Hanken Grotesk',sans-serif;color:#211A12;">Encryption</span>
+          <div style="display:flex;align-items:center;gap:8px;border:2.5px solid #211A12;border-radius:10px;padding:9px 14px;background:#FFF8EF;font:700 14px 'Hanken Grotesk',sans-serif;color:#211A12;">256-bit AES <svg viewBox="0 0 24 24" fill="none" stroke="#211A12" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M6 9l6 6 6-6"/></svg></div>
+        </div>
+
+        <!-- CTA -->
+        <div style="margin-top:30px;display:flex;align-items:center;gap:14px;">
+          <div style="flex:1;background:#211A12;color:#fff;border:2.5px solid #211A12;border-radius:14px;padding:16px;text-align:center;font:800 17px 'Bricolage Grotesque',sans-serif;letter-spacing:.02em;box-shadow:5px 5px 0 #F2922B;display:flex;align-items:center;justify-content:center;gap:10px;text-transform:uppercase;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><rect x="3" y="11" width="18" height="10" rx="2.5"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Lock PDF</div>
+          <div style="font:800 15px 'Hanken Grotesk',sans-serif;color:#211A12;border:2.5px solid #211A12;border-radius:14px;padding:16px 26px;text-transform:uppercase;">Cancel</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+
+<!-- ============ UNLOCK ============ -->
+<sc-if value="{{ showFlow }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;left:0px;top:1100px;width:1280px;">
+  <div data-drags-parent="1" style="font:600 13px 'Hanken Grotesk',sans-serif;color:#9a8c7c;letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px;">Flow · Unlock PDF</div>
+  <div style="width:1280px;background:#FFF3E2;border-radius:28px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden;padding:34px 56px 56px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:40px;height:40px;border-radius:11px;background:#F2922B;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#211A12" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:19px;height:19px;"><path d="M6 3h8l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg></div><div style="font:800 21px 'Bricolage Grotesque',sans-serif;color:#211A12;">Chowbea PDF</div></div>
+      <div style="font:800 14px 'Hanken Grotesk',sans-serif;color:#211A12;background:#fff;border:2.5px solid #211A12;border-radius:999px;padding:9px 20px;box-shadow:3px 3px 0 #211A12;">SIGN IN</div>
+    </div>
+    <div style="margin-top:34px;display:inline-flex;align-items:center;gap:8px;font:800 13px 'Hanken Grotesk',sans-serif;letter-spacing:.04em;color:#211A12;background:#fff;border:2.5px solid #211A12;border-radius:999px;padding:8px 16px;box-shadow:3px 3px 0 #211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M15 18l-6-6 6-6"/></svg>ALL TOOLS</div>
+    <div style="margin-top:20px;display:flex;align-items:center;gap:18px;">
+      <div style="width:60px;height:60px;border-radius:15px;background:#F2922B;border:2.5px solid #211A12;color:#211A12;display:flex;align-items:center;justify-content:center;box-shadow:4px 4px 0 #211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:30px;height:30px;"><rect x="3" y="11" width="18" height="10" rx="2.5"/><path d="M7 11V7a5 5 0 0 1 9.6-1.8"/></svg></div>
+      <div><div style="font:800 44px 'Bricolage Grotesque',sans-serif;color:#211A12;letter-spacing:-.01em;text-transform:uppercase;">Unlock PDF</div><div style="font:600 16px 'Hanken Grotesk',sans-serif;color:#5b5043;margin-top:2px;">Remove the password so it opens without a prompt.</div></div>
+    </div>
+    <div style="margin-top:30px;display:grid;grid-template-columns:360px 1fr;gap:28px;align-items:start;">
+      <div style="background:#fff;border:2.5px solid #211A12;border-radius:20px;padding:22px;box-shadow:6px 6px 0 #211A12;">
+        <div style="position:relative;height:200px;border-radius:14px;background:#FFF3E2;border:2px solid #211A12;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+          <div style="width:120px;height:152px;background:#fff;border:2px solid #211A12;border-radius:6px;padding:16px 14px;filter:blur(1px);opacity:.7;"><div style="width:46px;height:8px;border-radius:4px;background:#F2922B;"></div><div style="width:100%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:14px;"></div><div style="width:90%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:8px;"></div><div style="width:96%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:8px;"></div><div style="width:70%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:8px;"></div></div>
+          <div style="position:absolute;width:48px;height:48px;border-radius:13px;background:#211A12;color:#F2922B;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+        </div>
+        <div style="margin-top:18px;font:800 18px 'Bricolage Grotesque',sans-serif;color:#211A12;">Q3-Report.pdf</div>
+        <div style="margin-top:4px;font:600 14px 'Hanken Grotesk',sans-serif;color:#8a7d6c;">2.4 MB · Locked</div>
+        <div style="margin-top:16px;display:inline-block;font:800 13px 'Hanken Grotesk',sans-serif;color:#211A12;border:2px solid #211A12;border-radius:999px;padding:7px 16px;">REPLACE FILE</div>
+      </div>
+      <div style="background:#fff;border:2.5px solid #211A12;border-radius:20px;padding:30px;box-shadow:6px 6px 0 #211A12;">
+        <div style="font:800 22px 'Bricolage Grotesque',sans-serif;color:#211A12;">This PDF is protected</div>
+        <div style="font:600 15px/1.5 'Hanken Grotesk',sans-serif;color:#5b5043;margin-top:6px;max-width:460px;">Enter its current password and we'll save an unlocked copy. The original file stays untouched.</div>
+        <div style="margin-top:24px;font:800 13px 'Hanken Grotesk',sans-serif;letter-spacing:.03em;color:#211A12;margin-bottom:8px;text-transform:uppercase;">Current password</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;border:2.5px solid #211A12;border-radius:12px;padding:15px 16px;background:#FFF8EF;max-width:420px;">
+          <span style="font:700 16px 'Hanken Grotesk',sans-serif;color:#211A12;letter-spacing:.18em;">••••••••</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#211A12" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div style="margin-top:16px;display:flex;align-items:center;gap:8px;font:600 13px 'Hanken Grotesk',sans-serif;color:#7a6f5f;"><svg viewBox="0 0 24 24" fill="none" stroke="#F2922B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Processed in your browser. We never store your password.</div>
+        <div style="margin-top:30px;display:flex;align-items:center;gap:14px;">
+          <div style="flex:1;background:#211A12;color:#fff;border:2.5px solid #211A12;border-radius:14px;padding:16px;text-align:center;font:800 17px 'Bricolage Grotesque',sans-serif;box-shadow:5px 5px 0 #F2922B;display:flex;align-items:center;justify-content:center;gap:10px;text-transform:uppercase;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><rect x="3" y="11" width="18" height="10" rx="2.5"/><path d="M7 11V7a5 5 0 0 1 9.6-1.8"/></svg>Unlock PDF</div>
+          <div style="font:800 15px 'Hanken Grotesk',sans-serif;color:#211A12;border:2.5px solid #211A12;border-radius:14px;padding:16px 26px;text-transform:uppercase;">Cancel</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ COMPRESS ============ -->
+<sc-if value="{{ showFlow }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;left:1360px;top:1100px;width:1280px;">
+  <div data-drags-parent="1" style="font:600 13px 'Hanken Grotesk',sans-serif;color:#9a8c7c;letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px;">Flow · Compress PDF</div>
+  <div style="width:1280px;background:#FFF3E2;border-radius:28px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden;padding:34px 56px 56px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:40px;height:40px;border-radius:11px;background:#F2922B;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#211A12" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:19px;height:19px;"><path d="M6 3h8l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg></div><div style="font:800 21px 'Bricolage Grotesque',sans-serif;color:#211A12;">Chowbea PDF</div></div>
+      <div style="font:800 14px 'Hanken Grotesk',sans-serif;color:#211A12;background:#fff;border:2.5px solid #211A12;border-radius:999px;padding:9px 20px;box-shadow:3px 3px 0 #211A12;">SIGN IN</div>
+    </div>
+    <div style="margin-top:34px;display:inline-flex;align-items:center;gap:8px;font:800 13px 'Hanken Grotesk',sans-serif;letter-spacing:.04em;color:#211A12;background:#fff;border:2.5px solid #211A12;border-radius:999px;padding:8px 16px;box-shadow:3px 3px 0 #211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M15 18l-6-6 6-6"/></svg>ALL TOOLS</div>
+    <div style="margin-top:20px;display:flex;align-items:center;gap:18px;">
+      <div style="width:60px;height:60px;border-radius:15px;background:#F2922B;border:2.5px solid #211A12;color:#211A12;display:flex;align-items:center;justify-content:center;box-shadow:4px 4px 0 #211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:30px;height:30px;"><path d="M8 4l4 4 4-4"/><path d="M8 20l4-4 4 4"/><path d="M4 12h16"/></svg></div>
+      <div><div style="font:800 44px 'Bricolage Grotesque',sans-serif;color:#211A12;letter-spacing:-.01em;text-transform:uppercase;">Compress PDF</div><div style="font:600 16px 'Hanken Grotesk',sans-serif;color:#5b5043;margin-top:2px;">Make the file smaller while keeping it sharp.</div></div>
+    </div>
+    <div style="margin-top:30px;display:grid;grid-template-columns:360px 1fr;gap:28px;align-items:start;">
+      <div style="background:#fff;border:2.5px solid #211A12;border-radius:20px;padding:22px;box-shadow:6px 6px 0 #211A12;">
+        <div style="position:relative;height:200px;border-radius:14px;background:#FFF3E2;border:2px solid #211A12;display:flex;align-items:center;justify-content:center;overflow:hidden;"><div style="width:120px;height:152px;background:#fff;border:2px solid #211A12;border-radius:6px;padding:16px 14px;"><div style="width:46px;height:8px;border-radius:4px;background:#F2922B;"></div><div style="width:100%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:14px;"></div><div style="width:90%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:8px;"></div><div style="width:96%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:8px;"></div><div style="width:70%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:8px;"></div><div style="width:84%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:8px;"></div></div></div>
+        <div style="margin-top:18px;font:800 18px 'Bricolage Grotesque',sans-serif;color:#211A12;">Q3-Report.pdf</div>
+        <div style="margin-top:4px;font:600 14px 'Hanken Grotesk',sans-serif;color:#8a7d6c;">2.4 MB · 18 pages</div>
+        <div style="margin-top:16px;display:inline-block;font:800 13px 'Hanken Grotesk',sans-serif;color:#211A12;border:2px solid #211A12;border-radius:999px;padding:7px 16px;">REPLACE FILE</div>
+      </div>
+      <div style="background:#fff;border:2.5px solid #211A12;border-radius:20px;padding:30px;box-shadow:6px 6px 0 #211A12;">
+        <div style="font:800 13px 'Hanken Grotesk',sans-serif;letter-spacing:.03em;color:#211A12;margin-bottom:14px;text-transform:uppercase;">Compression level</div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:14px;border:2.5px solid #211A12;border-radius:14px;padding:16px;background:#FFF8EF;box-shadow:4px 4px 0 #F2922B;">
+            <div style="width:22px;height:22px;border-radius:50%;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><div style="width:10px;height:10px;border-radius:50%;background:#F2922B;"></div></div>
+            <div style="flex:1;"><div style="font:800 17px 'Bricolage Grotesque',sans-serif;color:#211A12;">Recommended</div><div style="font:600 13px 'Hanken Grotesk',sans-serif;color:#6b5f50;">Great quality, much smaller</div></div>
+            <div style="font:800 14px 'Hanken Grotesk',sans-serif;color:#211A12;background:#F2922B;border:2px solid #211A12;border-radius:999px;padding:6px 14px;">≈ 0.9 MB</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;border:2.5px solid #211A12;border-radius:14px;padding:16px;background:#fff;">
+            <div style="width:22px;height:22px;border-radius:50%;border:2.5px solid #211A12;flex-shrink:0;"></div>
+            <div style="flex:1;"><div style="font:800 17px 'Bricolage Grotesque',sans-serif;color:#211A12;">Strong</div><div style="font:600 13px 'Hanken Grotesk',sans-serif;color:#6b5f50;">Smallest — great for email</div></div>
+            <div style="font:800 14px 'Hanken Grotesk',sans-serif;color:#211A12;background:#fff;border:2px solid #211A12;border-radius:999px;padding:6px 14px;">≈ 0.6 MB</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;border:2.5px solid #211A12;border-radius:14px;padding:16px;background:#fff;">
+            <div style="width:22px;height:22px;border-radius:50%;border:2.5px solid #211A12;flex-shrink:0;"></div>
+            <div style="flex:1;"><div style="font:800 17px 'Bricolage Grotesque',sans-serif;color:#211A12;">Light</div><div style="font:600 13px 'Hanken Grotesk',sans-serif;color:#6b5f50;">Highest quality, light trim</div></div>
+            <div style="font:800 14px 'Hanken Grotesk',sans-serif;color:#211A12;background:#fff;border:2px solid #211A12;border-radius:999px;padding:6px 14px;">≈ 1.8 MB</div>
+          </div>
+        </div>
+        <div style="margin-top:20px;display:flex;align-items:center;gap:14px;background:#FFF3E2;border:2.5px solid #211A12;border-radius:14px;padding:16px 18px;">
+          <span style="font:800 20px 'Bricolage Grotesque',sans-serif;color:#211A12;">2.4 MB</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#211A12" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;"><path d="M4 12h14"/><path d="M14 6l6 6-6 6"/></svg>
+          <span style="font:800 20px 'Bricolage Grotesque',sans-serif;color:#211A12;">0.9 MB</span>
+          <div style="margin-left:auto;font:800 13px 'Hanken Grotesk',sans-serif;color:#fff;background:#211A12;border-radius:999px;padding:7px 14px;">62% SMALLER</div>
+        </div>
+        <div style="margin-top:26px;display:flex;align-items:center;gap:14px;">
+          <div style="flex:1;background:#211A12;color:#fff;border:2.5px solid #211A12;border-radius:14px;padding:16px;text-align:center;font:800 17px 'Bricolage Grotesque',sans-serif;box-shadow:5px 5px 0 #F2922B;display:flex;align-items:center;justify-content:center;gap:10px;text-transform:uppercase;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M8 4l4 4 4-4"/><path d="M8 20l4-4 4 4"/><path d="M4 12h16"/></svg>Compress PDF</div>
+          <div style="font:800 15px 'Hanken Grotesk',sans-serif;color:#211A12;border:2.5px solid #211A12;border-radius:14px;padding:16px 26px;text-transform:uppercase;">Cancel</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ MERGE ============ -->
+<sc-if value="{{ showFlow }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;left:0px;top:2200px;width:1280px;">
+  <div data-drags-parent="1" style="font:600 13px 'Hanken Grotesk',sans-serif;color:#9a8c7c;letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px;">Flow · Merge PDFs</div>
+  <div style="width:1280px;background:#FFF3E2;border-radius:28px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden;padding:34px 56px 56px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:40px;height:40px;border-radius:11px;background:#F2922B;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#211A12" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:19px;height:19px;"><path d="M6 3h8l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg></div><div style="font:800 21px 'Bricolage Grotesque',sans-serif;color:#211A12;">Chowbea PDF</div></div>
+      <div style="font:800 14px 'Hanken Grotesk',sans-serif;color:#211A12;background:#fff;border:2.5px solid #211A12;border-radius:999px;padding:9px 20px;box-shadow:3px 3px 0 #211A12;">SIGN IN</div>
+    </div>
+    <div style="margin-top:34px;display:inline-flex;align-items:center;gap:8px;font:800 13px 'Hanken Grotesk',sans-serif;letter-spacing:.04em;color:#211A12;background:#fff;border:2.5px solid #211A12;border-radius:999px;padding:8px 16px;box-shadow:3px 3px 0 #211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M15 18l-6-6 6-6"/></svg>ALL TOOLS</div>
+    <div style="margin-top:20px;display:flex;align-items:center;gap:18px;">
+      <div style="width:60px;height:60px;border-radius:15px;background:#F2922B;border:2.5px solid #211A12;color:#211A12;display:flex;align-items:center;justify-content:center;box-shadow:4px 4px 0 #211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:30px;height:30px;"><rect x="3" y="3" width="13" height="13" rx="2.5"/><path d="M8 21h11a2 2 0 0 0 2-2V8"/></svg></div>
+      <div><div style="font:800 44px 'Bricolage Grotesque',sans-serif;color:#211A12;letter-spacing:-.01em;text-transform:uppercase;">Merge PDFs</div><div style="font:600 16px 'Hanken Grotesk',sans-serif;color:#5b5043;margin-top:2px;">Drag to reorder — the final PDF follows this order.</div></div>
+    </div>
+    <div style="margin-top:30px;background:#fff;border:2.5px solid #211A12;border-radius:20px;padding:26px;box-shadow:6px 6px 0 #211A12;">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;align-items:center;gap:16px;border:2px solid #211A12;border-radius:14px;padding:14px 16px;background:#FFF8EF;">
+          <div style="width:30px;height:30px;border-radius:50%;background:#F2922B;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;font:800 14px 'Bricolage Grotesque',sans-serif;color:#211A12;flex-shrink:0;">1</div>
+          <svg viewBox="0 0 24 24" fill="#211A12" style="width:18px;height:18px;flex-shrink:0;"><circle cx="9" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+          <div style="width:38px;height:48px;background:#fff;border:2px solid #211A12;border-radius:5px;padding:7px 6px;flex-shrink:0;"><div style="width:60%;height:3px;background:#F2922B;border-radius:2px;"></div><div style="width:100%;height:2.5px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:80%;height:2.5px;background:#E7DDCE;border-radius:2px;margin-top:4px;"></div></div>
+          <div style="flex:1;"><div style="font:800 16px 'Bricolage Grotesque',sans-serif;color:#211A12;">Cover-letter.pdf</div><div style="font:600 13px 'Hanken Grotesk',sans-serif;color:#8a7d6c;">2 pages · 180 KB</div></div>
+          <div style="width:30px;height:30px;border-radius:9px;border:2px solid #211A12;display:flex;align-items:center;justify-content:center;color:#211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;border:2px solid #211A12;border-radius:14px;padding:14px 16px;background:#FFF8EF;">
+          <div style="width:30px;height:30px;border-radius:50%;background:#F2922B;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;font:800 14px 'Bricolage Grotesque',sans-serif;color:#211A12;flex-shrink:0;">2</div>
+          <svg viewBox="0 0 24 24" fill="#211A12" style="width:18px;height:18px;flex-shrink:0;"><circle cx="9" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+          <div style="width:38px;height:48px;background:#fff;border:2px solid #211A12;border-radius:5px;padding:7px 6px;flex-shrink:0;"><div style="width:60%;height:3px;background:#F2922B;border-radius:2px;"></div><div style="width:100%;height:2.5px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:80%;height:2.5px;background:#E7DDCE;border-radius:2px;margin-top:4px;"></div></div>
+          <div style="flex:1;"><div style="font:800 16px 'Bricolage Grotesque',sans-serif;color:#211A12;">Q3-Report.pdf</div><div style="font:600 13px 'Hanken Grotesk',sans-serif;color:#8a7d6c;">18 pages · 2.4 MB</div></div>
+          <div style="width:30px;height:30px;border-radius:9px;border:2px solid #211A12;display:flex;align-items:center;justify-content:center;color:#211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;border:2px solid #211A12;border-radius:14px;padding:14px 16px;background:#FFF8EF;">
+          <div style="width:30px;height:30px;border-radius:50%;background:#F2922B;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;font:800 14px 'Bricolage Grotesque',sans-serif;color:#211A12;flex-shrink:0;">3</div>
+          <svg viewBox="0 0 24 24" fill="#211A12" style="width:18px;height:18px;flex-shrink:0;"><circle cx="9" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+          <div style="width:38px;height:48px;background:#fff;border:2px solid #211A12;border-radius:5px;padding:7px 6px;flex-shrink:0;"><div style="width:60%;height:3px;background:#F2922B;border-radius:2px;"></div><div style="width:100%;height:2.5px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:80%;height:2.5px;background:#E7DDCE;border-radius:2px;margin-top:4px;"></div></div>
+          <div style="flex:1;"><div style="font:800 16px 'Bricolage Grotesque',sans-serif;color:#211A12;">Appendix.pdf</div><div style="font:600 13px 'Hanken Grotesk',sans-serif;color:#8a7d6c;">6 pages · 640 KB</div></div>
+          <div style="width:30px;height:30px;border-radius:9px;border:2px solid #211A12;display:flex;align-items:center;justify-content:center;color:#211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;border:2.5px dashed #C9B89C;border-radius:14px;padding:16px;font:800 14px 'Hanken Grotesk',sans-serif;color:#9a8c7c;text-transform:uppercase;letter-spacing:.03em;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><path d="M12 5v14M5 12h14"/></svg>Add more files</div>
+      </div>
+      <div style="height:2.5px;background:#211A12;margin:24px 0;border-radius:2px;"></div>
+      <div style="display:flex;align-items:center;gap:18px;">
+        <div style="flex:1;"><div style="font:800 13px 'Hanken Grotesk',sans-serif;letter-spacing:.03em;color:#211A12;margin-bottom:8px;text-transform:uppercase;">Output name</div><div style="border:2.5px solid #211A12;border-radius:12px;padding:13px 16px;background:#FFF8EF;font:700 15px 'Hanken Grotesk',sans-serif;color:#211A12;">Chowbea-merged.pdf</div></div>
+        <div style="align-self:flex-end;background:#211A12;color:#fff;border:2.5px solid #211A12;border-radius:14px;padding:16px 30px;font:800 17px 'Bricolage Grotesque',sans-serif;box-shadow:5px 5px 0 #F2922B;display:flex;align-items:center;gap:10px;text-transform:uppercase;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><rect x="3" y="3" width="13" height="13" rx="2.5"/><path d="M8 21h11a2 2 0 0 0 2-2V8"/></svg>Merge 3 files</div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ SPLIT ============ -->
+<sc-if value="{{ showFlow }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;left:1360px;top:2200px;width:1280px;">
+  <div data-drags-parent="1" style="font:600 13px 'Hanken Grotesk',sans-serif;color:#9a8c7c;letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px;">Flow · Split PDF</div>
+  <div style="width:1280px;background:#FFF3E2;border-radius:28px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden;padding:34px 56px 56px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:40px;height:40px;border-radius:11px;background:#F2922B;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#211A12" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:19px;height:19px;"><path d="M6 3h8l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg></div><div style="font:800 21px 'Bricolage Grotesque',sans-serif;color:#211A12;">Chowbea PDF</div></div>
+      <div style="font:800 14px 'Hanken Grotesk',sans-serif;color:#211A12;background:#fff;border:2.5px solid #211A12;border-radius:999px;padding:9px 20px;box-shadow:3px 3px 0 #211A12;">SIGN IN</div>
+    </div>
+    <div style="margin-top:34px;display:inline-flex;align-items:center;gap:8px;font:800 13px 'Hanken Grotesk',sans-serif;letter-spacing:.04em;color:#211A12;background:#fff;border:2.5px solid #211A12;border-radius:999px;padding:8px 16px;box-shadow:3px 3px 0 #211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M15 18l-6-6 6-6"/></svg>ALL TOOLS</div>
+    <div style="margin-top:20px;display:flex;align-items:center;justify-content:space-between;gap:18px;">
+      <div style="display:flex;align-items:center;gap:18px;">
+        <div style="width:60px;height:60px;border-radius:15px;background:#F2922B;border:2.5px solid #211A12;color:#211A12;display:flex;align-items:center;justify-content:center;box-shadow:4px 4px 0 #211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:30px;height:30px;"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M12 3v18" stroke-dasharray="2.5 3"/></svg></div>
+        <div><div style="font:800 44px 'Bricolage Grotesque',sans-serif;color:#211A12;letter-spacing:-.01em;text-transform:uppercase;">Split PDF</div><div style="font:600 16px 'Hanken Grotesk',sans-serif;color:#5b5043;margin-top:2px;">Pick the pages to pull out into a new file.</div></div>
+      </div>
+      <div style="display:flex;gap:0;border:2.5px solid #211A12;border-radius:12px;overflow:hidden;box-shadow:3px 3px 0 #211A12;">
+        <div style="font:800 13px 'Hanken Grotesk',sans-serif;color:#fff;background:#211A12;padding:11px 16px;text-transform:uppercase;">Extract pages</div>
+        <div style="font:800 13px 'Hanken Grotesk',sans-serif;color:#211A12;background:#fff;padding:11px 16px;border-left:2.5px solid #211A12;text-transform:uppercase;">By range</div>
+        <div style="font:800 13px 'Hanken Grotesk',sans-serif;color:#211A12;background:#fff;padding:11px 16px;border-left:2.5px solid #211A12;text-transform:uppercase;">Every N</div>
+      </div>
+    </div>
+    <div style="margin-top:28px;background:#fff;border:2.5px solid #211A12;border-radius:20px;padding:26px;box-shadow:6px 6px 0 #211A12;">
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:16px;">
+        <div style="position:relative;"><div style="background:#fff;border:3px solid #F2922B;outline:0;border-radius:8px;aspect-ratio:3/4;padding:11px;box-shadow:3px 3px 0 #211A12;"><div style="width:55%;height:5px;background:#F2922B;border-radius:3px;"></div><div style="width:100%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:8px;"></div><div style="width:85%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:92%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div></div><div style="position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;background:#F2922B;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;color:#211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M20 6L9 17l-5-5"/></svg></div><div style="text-align:center;font:700 12px 'Hanken Grotesk',sans-serif;color:#211A12;margin-top:7px;">1</div></div>
+        <div style="position:relative;"><div style="background:#fff;border:3px solid #F2922B;border-radius:8px;aspect-ratio:3/4;padding:11px;box-shadow:3px 3px 0 #211A12;"><div style="width:55%;height:5px;background:#F2922B;border-radius:3px;"></div><div style="width:100%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:8px;"></div><div style="width:85%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:92%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div></div><div style="position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;background:#F2922B;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;color:#211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M20 6L9 17l-5-5"/></svg></div><div style="text-align:center;font:700 12px 'Hanken Grotesk',sans-serif;color:#211A12;margin-top:7px;">2</div></div>
+        <div style="position:relative;"><div style="background:#fff;border:2px solid #211A12;border-radius:8px;aspect-ratio:3/4;padding:11px;"><div style="width:55%;height:5px;background:#F2922B;border-radius:3px;"></div><div style="width:100%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:8px;"></div><div style="width:85%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:92%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div></div><div style="text-align:center;font:700 12px 'Hanken Grotesk',sans-serif;color:#9a8c7c;margin-top:7px;">3</div></div>
+        <div style="position:relative;"><div style="background:#fff;border:2px solid #211A12;border-radius:8px;aspect-ratio:3/4;padding:11px;"><div style="width:55%;height:5px;background:#F2922B;border-radius:3px;"></div><div style="width:100%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:8px;"></div><div style="width:85%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:92%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div></div><div style="text-align:center;font:700 12px 'Hanken Grotesk',sans-serif;color:#9a8c7c;margin-top:7px;">4</div></div>
+        <div style="position:relative;"><div style="background:#fff;border:3px solid #F2922B;border-radius:8px;aspect-ratio:3/4;padding:11px;box-shadow:3px 3px 0 #211A12;"><div style="width:55%;height:5px;background:#F2922B;border-radius:3px;"></div><div style="width:100%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:8px;"></div><div style="width:85%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:92%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div></div><div style="position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;background:#F2922B;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;color:#211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M20 6L9 17l-5-5"/></svg></div><div style="text-align:center;font:700 12px 'Hanken Grotesk',sans-serif;color:#211A12;margin-top:7px;">5</div></div>
+        <div style="position:relative;"><div style="background:#fff;border:2px solid #211A12;border-radius:8px;aspect-ratio:3/4;padding:11px;"><div style="width:55%;height:5px;background:#F2922B;border-radius:3px;"></div><div style="width:100%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:8px;"></div><div style="width:85%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:92%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div></div><div style="text-align:center;font:700 12px 'Hanken Grotesk',sans-serif;color:#9a8c7c;margin-top:7px;">6</div></div>
+        <div style="position:relative;"><div style="background:#fff;border:2px solid #211A12;border-radius:8px;aspect-ratio:3/4;padding:11px;"><div style="width:55%;height:5px;background:#F2922B;border-radius:3px;"></div><div style="width:100%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:8px;"></div><div style="width:85%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:92%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div></div><div style="text-align:center;font:700 12px 'Hanken Grotesk',sans-serif;color:#9a8c7c;margin-top:7px;">7</div></div>
+        <div style="position:relative;"><div style="background:#fff;border:3px solid #F2922B;border-radius:8px;aspect-ratio:3/4;padding:11px;box-shadow:3px 3px 0 #211A12;"><div style="width:55%;height:5px;background:#F2922B;border-radius:3px;"></div><div style="width:100%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:8px;"></div><div style="width:85%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:92%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div></div><div style="position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;background:#F2922B;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;color:#211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M20 6L9 17l-5-5"/></svg></div><div style="text-align:center;font:700 12px 'Hanken Grotesk',sans-serif;color:#211A12;margin-top:7px;">8</div></div>
+        <div style="position:relative;"><div style="background:#fff;border:2px solid #211A12;border-radius:8px;aspect-ratio:3/4;padding:11px;"><div style="width:55%;height:5px;background:#F2922B;border-radius:3px;"></div><div style="width:100%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:8px;"></div><div style="width:85%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:92%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div></div><div style="text-align:center;font:700 12px 'Hanken Grotesk',sans-serif;color:#9a8c7c;margin-top:7px;">9</div></div>
+        <div style="position:relative;"><div style="background:#fff;border:2px solid #211A12;border-radius:8px;aspect-ratio:3/4;padding:11px;"><div style="width:55%;height:5px;background:#F2922B;border-radius:3px;"></div><div style="width:100%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:8px;"></div><div style="width:85%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:92%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div></div><div style="text-align:center;font:700 12px 'Hanken Grotesk',sans-serif;color:#9a8c7c;margin-top:7px;">10</div></div>
+        <div style="position:relative;"><div style="background:#fff;border:2px solid #211A12;border-radius:8px;aspect-ratio:3/4;padding:11px;"><div style="width:55%;height:5px;background:#F2922B;border-radius:3px;"></div><div style="width:100%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:8px;"></div><div style="width:85%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:92%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div></div><div style="text-align:center;font:700 12px 'Hanken Grotesk',sans-serif;color:#9a8c7c;margin-top:7px;">11</div></div>
+        <div style="position:relative;"><div style="background:#fff;border:2px solid #211A12;border-radius:8px;aspect-ratio:3/4;padding:11px;"><div style="width:55%;height:5px;background:#F2922B;border-radius:3px;"></div><div style="width:100%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:8px;"></div><div style="width:85%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:92%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div></div><div style="text-align:center;font:700 12px 'Hanken Grotesk',sans-serif;color:#9a8c7c;margin-top:7px;">12</div></div>
+      </div>
+      <div style="height:2.5px;background:#211A12;margin:22px 0;border-radius:2px;"></div>
+      <div style="display:flex;align-items:center;gap:18px;">
+        <div style="font:700 15px 'Hanken Grotesk',sans-serif;color:#211A12;"><span style="font-weight:800;">4 pages</span> selected → 1 new PDF</div>
+        <div style="font:700 14px 'Hanken Grotesk',sans-serif;color:#9a8c7c;text-decoration:underline;">Clear</div>
+        <div style="margin-left:auto;background:#211A12;color:#fff;border:2.5px solid #211A12;border-radius:14px;padding:16px 30px;font:800 17px 'Bricolage Grotesque',sans-serif;box-shadow:5px 5px 0 #F2922B;display:flex;align-items:center;gap:10px;text-transform:uppercase;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M12 3v18" stroke-dasharray="2.5 3"/></svg>Split PDF</div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ OCR ============ -->
+<sc-if value="{{ showFlow }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;left:0px;top:3300px;width:1280px;">
+  <div data-drags-parent="1" style="font:600 13px 'Hanken Grotesk',sans-serif;color:#9a8c7c;letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px;">Flow · Run OCR</div>
+  <div style="width:1280px;background:#FFF3E2;border-radius:28px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden;padding:34px 56px 56px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:40px;height:40px;border-radius:11px;background:#F2922B;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#211A12" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:19px;height:19px;"><path d="M6 3h8l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg></div><div style="font:800 21px 'Bricolage Grotesque',sans-serif;color:#211A12;">Chowbea PDF</div></div>
+      <div style="font:800 14px 'Hanken Grotesk',sans-serif;color:#211A12;background:#fff;border:2.5px solid #211A12;border-radius:999px;padding:9px 20px;box-shadow:3px 3px 0 #211A12;">SIGN IN</div>
+    </div>
+    <div style="margin-top:34px;display:inline-flex;align-items:center;gap:8px;font:800 13px 'Hanken Grotesk',sans-serif;letter-spacing:.04em;color:#211A12;background:#fff;border:2.5px solid #211A12;border-radius:999px;padding:8px 16px;box-shadow:3px 3px 0 #211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M15 18l-6-6 6-6"/></svg>ALL TOOLS</div>
+    <div style="margin-top:20px;display:flex;align-items:center;gap:18px;">
+      <div style="width:60px;height:60px;border-radius:15px;background:#F2922B;border:2.5px solid #211A12;color:#211A12;display:flex;align-items:center;justify-content:center;box-shadow:4px 4px 0 #211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:30px;height:30px;"><path d="M4 8V6a2 2 0 0 1 2-2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M20 16v2a2 2 0 0 1-2 2h-2"/><path d="M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M8 10h8"/><path d="M8 14h5"/></svg></div>
+      <div><div style="font:800 44px 'Bricolage Grotesque',sans-serif;color:#211A12;letter-spacing:-.01em;text-transform:uppercase;">Run OCR</div><div style="font:600 16px 'Hanken Grotesk',sans-serif;color:#5b5043;margin-top:2px;">Turn scanned pages into selectable, searchable text.</div></div>
+    </div>
+    <div style="margin-top:30px;display:grid;grid-template-columns:360px 1fr;gap:28px;align-items:start;">
+      <div style="background:#fff;border:2.5px solid #211A12;border-radius:20px;padding:22px;box-shadow:6px 6px 0 #211A12;">
+        <div style="position:relative;height:200px;border-radius:14px;background:#FFF3E2;border:2px solid #211A12;display:flex;align-items:center;justify-content:center;overflow:hidden;"><div style="width:120px;height:152px;background:#fff;border:2px solid #211A12;border-radius:6px;padding:16px 14px;"><div style="width:70%;height:6px;border-radius:3px;background:#E7DDCE;"></div><div style="width:100%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:11px;"></div><div style="width:92%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:8px;"></div><div style="width:96%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:8px;"></div><div style="width:60%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:8px;"></div></div></div>
+        <div style="margin-top:18px;font:800 18px 'Bricolage Grotesque',sans-serif;color:#211A12;">Scanned-invoice.pdf</div>
+        <div style="margin-top:4px;font:600 14px 'Hanken Grotesk',sans-serif;color:#8a7d6c;">3.1 MB · 4 pages · Image-only</div>
+        <div style="margin-top:16px;display:inline-block;font:800 13px 'Hanken Grotesk',sans-serif;color:#211A12;border:2px solid #211A12;border-radius:999px;padding:7px 16px;">REPLACE FILE</div>
+      </div>
+      <div style="background:#fff;border:2.5px solid #211A12;border-radius:20px;padding:30px;box-shadow:6px 6px 0 #211A12;">
+        <div style="font:800 13px 'Hanken Grotesk',sans-serif;letter-spacing:.03em;color:#211A12;margin-bottom:8px;text-transform:uppercase;">Document language</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;border:2.5px solid #211A12;border-radius:12px;padding:13px 16px;background:#FFF8EF;font:700 15px 'Hanken Grotesk',sans-serif;color:#211A12;">English (US) <svg viewBox="0 0 24 24" fill="none" stroke="#211A12" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div style="height:2.5px;background:#211A12;margin:24px 0;border-radius:2px;"></div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font:600 15px 'Hanken Grotesk',sans-serif;color:#211A12;">Make text selectable &amp; searchable</span><div style="width:50px;height:28px;border-radius:999px;background:#F2922B;border:2.5px solid #211A12;padding:2px;display:flex;justify-content:flex-end;align-items:center;"><div style="width:20px;height:20px;border-radius:50%;background:#211A12;"></div></div></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font:600 15px 'Hanken Grotesk',sans-serif;color:#211A12;">Keep original page layout</span><div style="width:50px;height:28px;border-radius:999px;background:#F2922B;border:2.5px solid #211A12;padding:2px;display:flex;justify-content:flex-end;align-items:center;"><div style="width:20px;height:20px;border-radius:50%;background:#211A12;"></div></div></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font:600 15px 'Hanken Grotesk',sans-serif;color:#211A12;">Straighten skewed scans</span><div style="width:50px;height:28px;border-radius:999px;background:#fff;border:2.5px solid #211A12;padding:2px;display:flex;justify-content:flex-start;align-items:center;"><div style="width:20px;height:20px;border-radius:50%;background:#211A12;"></div></div></div>
+        </div>
+        <div style="margin-top:22px;font:800 13px 'Hanken Grotesk',sans-serif;letter-spacing:.03em;color:#211A12;margin-bottom:10px;text-transform:uppercase;">Output</div>
+        <div style="display:flex;gap:0;border:2.5px solid #211A12;border-radius:12px;overflow:hidden;width:fit-content;box-shadow:3px 3px 0 #211A12;">
+          <div style="font:800 13px 'Hanken Grotesk',sans-serif;color:#fff;background:#211A12;padding:11px 18px;text-transform:uppercase;">Searchable PDF</div>
+          <div style="font:800 13px 'Hanken Grotesk',sans-serif;color:#211A12;background:#fff;padding:11px 18px;border-left:2.5px solid #211A12;text-transform:uppercase;">Plain text</div>
+        </div>
+        <div style="margin-top:28px;display:flex;align-items:center;gap:14px;">
+          <div style="flex:1;background:#211A12;color:#fff;border:2.5px solid #211A12;border-radius:14px;padding:16px;text-align:center;font:800 17px 'Bricolage Grotesque',sans-serif;box-shadow:5px 5px 0 #F2922B;display:flex;align-items:center;justify-content:center;gap:10px;text-transform:uppercase;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M4 8V6a2 2 0 0 1 2-2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M20 16v2a2 2 0 0 1-2 2h-2"/><path d="M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M8 10h8"/><path d="M8 14h5"/></svg>Run OCR</div>
+          <div style="font:800 15px 'Hanken Grotesk',sans-serif;color:#211A12;border:2.5px solid #211A12;border-radius:14px;padding:16px 26px;text-transform:uppercase;">Cancel</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ CONVERT ============ -->
+<sc-if value="{{ showFlow }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;left:1360px;top:3300px;width:1280px;">
+  <div data-drags-parent="1" style="font:600 13px 'Hanken Grotesk',sans-serif;color:#9a8c7c;letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px;">Flow · Convert PDF</div>
+  <div style="width:1280px;background:#FFF3E2;border-radius:28px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden;padding:34px 56px 56px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:40px;height:40px;border-radius:11px;background:#F2922B;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#211A12" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:19px;height:19px;"><path d="M6 3h8l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg></div><div style="font:800 21px 'Bricolage Grotesque',sans-serif;color:#211A12;">Chowbea PDF</div></div>
+      <div style="font:800 14px 'Hanken Grotesk',sans-serif;color:#211A12;background:#fff;border:2.5px solid #211A12;border-radius:999px;padding:9px 20px;box-shadow:3px 3px 0 #211A12;">SIGN IN</div>
+    </div>
+    <div style="margin-top:34px;display:inline-flex;align-items:center;gap:8px;font:800 13px 'Hanken Grotesk',sans-serif;letter-spacing:.04em;color:#211A12;background:#fff;border:2.5px solid #211A12;border-radius:999px;padding:8px 16px;box-shadow:3px 3px 0 #211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M15 18l-6-6 6-6"/></svg>ALL TOOLS</div>
+    <div style="margin-top:20px;display:flex;align-items:center;gap:18px;">
+      <div style="width:60px;height:60px;border-radius:15px;background:#F2922B;border:2.5px solid #211A12;color:#211A12;display:flex;align-items:center;justify-content:center;box-shadow:4px 4px 0 #211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:30px;height:30px;"><path d="M4 8h13"/><path d="M14 5l3 3-3 3"/><path d="M20 16H7"/><path d="M10 13l-3 3 3 3"/></svg></div>
+      <div><div style="font:800 44px 'Bricolage Grotesque',sans-serif;color:#211A12;letter-spacing:-.01em;text-transform:uppercase;">Convert PDF</div><div style="font:600 16px 'Hanken Grotesk',sans-serif;color:#5b5043;margin-top:2px;">Turn your PDF into an editable doc or images.</div></div>
+    </div>
+    <div style="margin-top:30px;display:grid;grid-template-columns:360px 1fr;gap:28px;align-items:start;">
+      <div style="background:#fff;border:2.5px solid #211A12;border-radius:20px;padding:22px;box-shadow:6px 6px 0 #211A12;">
+        <div style="position:relative;height:200px;border-radius:14px;background:#FFF3E2;border:2px solid #211A12;display:flex;align-items:center;justify-content:center;overflow:hidden;"><div style="width:120px;height:152px;background:#fff;border:2px solid #211A12;border-radius:6px;padding:16px 14px;"><div style="width:46px;height:8px;border-radius:4px;background:#F2922B;"></div><div style="width:100%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:14px;"></div><div style="width:90%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:8px;"></div><div style="width:96%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:8px;"></div><div style="width:70%;height:6px;border-radius:3px;background:#E7DDCE;margin-top:8px;"></div></div></div>
+        <div style="margin-top:18px;font:800 18px 'Bricolage Grotesque',sans-serif;color:#211A12;">Q3-Report.pdf</div>
+        <div style="margin-top:4px;font:600 14px 'Hanken Grotesk',sans-serif;color:#8a7d6c;">2.4 MB · 18 pages</div>
+        <div style="margin-top:16px;display:inline-block;font:800 13px 'Hanken Grotesk',sans-serif;color:#211A12;border:2px solid #211A12;border-radius:999px;padding:7px 16px;">REPLACE FILE</div>
+      </div>
+      <div style="background:#fff;border:2.5px solid #211A12;border-radius:20px;padding:30px;box-shadow:6px 6px 0 #211A12;">
+        <div style="font:800 13px 'Hanken Grotesk',sans-serif;letter-spacing:.03em;color:#211A12;margin-bottom:14px;text-transform:uppercase;">Convert to</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+          <div style="border:2.5px solid #211A12;border-radius:14px;padding:18px 14px;background:#FFF8EF;box-shadow:4px 4px 0 #F2922B;display:flex;flex-direction:column;align-items:center;gap:10px;"><div style="font:800 12px 'Hanken Grotesk',sans-serif;color:#fff;background:#2B6CB0;border:2px solid #211A12;border-radius:7px;padding:5px 9px;">DOC</div><div style="font:800 15px 'Bricolage Grotesque',sans-serif;color:#211A12;">Word</div></div>
+          <div style="border:2.5px solid #211A12;border-radius:14px;padding:18px 14px;background:#fff;display:flex;flex-direction:column;align-items:center;gap:10px;"><div style="font:800 12px 'Hanken Grotesk',sans-serif;color:#fff;background:#2F855A;border:2px solid #211A12;border-radius:7px;padding:5px 9px;">XLS</div><div style="font:800 15px 'Bricolage Grotesque',sans-serif;color:#211A12;">Excel</div></div>
+          <div style="border:2.5px solid #211A12;border-radius:14px;padding:18px 14px;background:#fff;display:flex;flex-direction:column;align-items:center;gap:10px;"><div style="font:800 12px 'Hanken Grotesk',sans-serif;color:#fff;background:#C05621;border:2px solid #211A12;border-radius:7px;padding:5px 9px;">PPT</div><div style="font:800 15px 'Bricolage Grotesque',sans-serif;color:#211A12;">Slides</div></div>
+          <div style="border:2.5px solid #211A12;border-radius:14px;padding:18px 14px;background:#fff;display:flex;flex-direction:column;align-items:center;gap:10px;"><div style="font:800 12px 'Hanken Grotesk',sans-serif;color:#fff;background:#6B46C1;border:2px solid #211A12;border-radius:7px;padding:5px 9px;">JPG</div><div style="font:800 15px 'Bricolage Grotesque',sans-serif;color:#211A12;">JPG</div></div>
+          <div style="border:2.5px solid #211A12;border-radius:14px;padding:18px 14px;background:#fff;display:flex;flex-direction:column;align-items:center;gap:10px;"><div style="font:800 12px 'Hanken Grotesk',sans-serif;color:#fff;background:#B7791F;border:2px solid #211A12;border-radius:7px;padding:5px 9px;">PNG</div><div style="font:800 15px 'Bricolage Grotesque',sans-serif;color:#211A12;">PNG</div></div>
+          <div style="border:2.5px solid #211A12;border-radius:14px;padding:18px 14px;background:#fff;display:flex;flex-direction:column;align-items:center;gap:10px;"><div style="font:800 12px 'Hanken Grotesk',sans-serif;color:#211A12;background:#E2E8F0;border:2px solid #211A12;border-radius:7px;padding:5px 9px;">TXT</div><div style="font:800 15px 'Bricolage Grotesque',sans-serif;color:#211A12;">Text</div></div>
+        </div>
+        <div style="margin-top:22px;display:flex;align-items:center;justify-content:space-between;"><span style="font:600 15px 'Hanken Grotesk',sans-serif;color:#211A12;">Keep formatting &amp; images</span><div style="width:50px;height:28px;border-radius:999px;background:#F2922B;border:2.5px solid #211A12;padding:2px;display:flex;justify-content:flex-end;align-items:center;"><div style="width:20px;height:20px;border-radius:50%;background:#211A12;"></div></div></div>
+        <div style="margin-top:28px;display:flex;align-items:center;gap:14px;">
+          <div style="flex:1;background:#211A12;color:#fff;border:2.5px solid #211A12;border-radius:14px;padding:16px;text-align:center;font:800 17px 'Bricolage Grotesque',sans-serif;box-shadow:5px 5px 0 #F2922B;display:flex;align-items:center;justify-content:center;gap:10px;text-transform:uppercase;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M4 8h13"/><path d="M14 5l3 3-3 3"/><path d="M20 16H7"/><path d="M10 13l-3 3 3 3"/></svg>Convert to Word</div>
+          <div style="font:800 15px 'Hanken Grotesk',sans-serif;color:#211A12;border:2.5px solid #211A12;border-radius:14px;padding:16px 26px;text-transform:uppercase;">Cancel</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ ROTATE ============ -->
+<sc-if value="{{ showFlow }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;left:0px;top:4400px;width:1280px;">
+  <div data-drags-parent="1" style="font:600 13px 'Hanken Grotesk',sans-serif;color:#9a8c7c;letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px;">Flow · Rotate &amp; reorder</div>
+  <div style="width:1280px;background:#FFF3E2;border-radius:28px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden;padding:34px 56px 56px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:12px;"><div style="width:40px;height:40px;border-radius:11px;background:#F2922B;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#211A12" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:19px;height:19px;"><path d="M6 3h8l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg></div><div style="font:800 21px 'Bricolage Grotesque',sans-serif;color:#211A12;">Chowbea PDF</div></div>
+      <div style="font:800 14px 'Hanken Grotesk',sans-serif;color:#211A12;background:#fff;border:2.5px solid #211A12;border-radius:999px;padding:9px 20px;box-shadow:3px 3px 0 #211A12;">SIGN IN</div>
+    </div>
+    <div style="margin-top:34px;display:inline-flex;align-items:center;gap:8px;font:800 13px 'Hanken Grotesk',sans-serif;letter-spacing:.04em;color:#211A12;background:#fff;border:2.5px solid #211A12;border-radius:999px;padding:8px 16px;box-shadow:3px 3px 0 #211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M15 18l-6-6 6-6"/></svg>ALL TOOLS</div>
+    <div style="margin-top:20px;display:flex;align-items:center;justify-content:space-between;gap:18px;">
+      <div style="display:flex;align-items:center;gap:18px;">
+        <div style="width:60px;height:60px;border-radius:15px;background:#F2922B;border:2.5px solid #211A12;color:#211A12;display:flex;align-items:center;justify-content:center;box-shadow:4px 4px 0 #211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:30px;height:30px;"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 4v5h-5"/></svg></div>
+        <div><div style="font:800 44px 'Bricolage Grotesque',sans-serif;color:#211A12;letter-spacing:-.01em;text-transform:uppercase;">Rotate &amp; reorder</div><div style="font:600 16px 'Hanken Grotesk',sans-serif;color:#5b5043;margin-top:2px;">Spin pages upright, then drag to reorder.</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font:800 12px 'Hanken Grotesk',sans-serif;letter-spacing:.04em;color:#211A12;text-transform:uppercase;">Rotate all</span>
+        <div style="width:42px;height:42px;border-radius:11px;background:#fff;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;color:#211A12;box-shadow:3px 3px 0 #211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M3 12a9 9 0 1 0 2.6-6.3"/><path d="M3 4v5h5"/></svg></div>
+        <div style="width:42px;height:42px;border-radius:11px;background:#fff;border:2.5px solid #211A12;display:flex;align-items:center;justify-content:center;color:#211A12;box-shadow:3px 3px 0 #211A12;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 4v5h-5"/></svg></div>
+      </div>
+    </div>
+    <div style="margin-top:28px;background:#fff;border:2.5px solid #211A12;border-radius:20px;padding:26px;box-shadow:6px 6px 0 #211A12;">
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:16px;">
+        <div style="position:relative;"><div style="background:#fff;border:2px solid #211A12;border-radius:8px;aspect-ratio:3/4;padding:11px;"><div style="width:55%;height:5px;background:#F2922B;border-radius:3px;"></div><div style="width:100%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:8px;"></div><div style="width:85%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:92%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div></div><div style="position:absolute;bottom:34px;right:5px;width:24px;height:24px;border-radius:50%;background:#211A12;color:#F2922B;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 4v5h-5"/></svg></div><div style="text-align:center;font:700 12px 'Hanken Grotesk',sans-serif;color:#9a8c7c;margin-top:7px;">1</div></div>
+        <div style="position:relative;"><div style="background:#fff;border:3px solid #F2922B;border-radius:8px;aspect-ratio:4/3;padding:11px;box-shadow:3px 3px 0 #211A12;margin-top:14px;"><div style="width:55%;height:5px;background:#F2922B;border-radius:3px;"></div><div style="width:100%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:8px;"></div><div style="width:85%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div></div><div style="position:absolute;bottom:34px;right:5px;width:24px;height:24px;border-radius:50%;background:#211A12;color:#F2922B;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 4v5h-5"/></svg></div><div style="text-align:center;font:700 12px 'Hanken Grotesk',sans-serif;color:#9a8c7c;margin-top:7px;">2</div></div>
+        <div style="position:relative;"><div style="background:#fff;border:2px solid #211A12;border-radius:8px;aspect-ratio:3/4;padding:11px;"><div style="width:55%;height:5px;background:#F2922B;border-radius:3px;"></div><div style="width:100%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:8px;"></div><div style="width:85%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:92%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div></div><div style="position:absolute;bottom:34px;right:5px;width:24px;height:24px;border-radius:50%;background:#211A12;color:#F2922B;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 4v5h-5"/></svg></div><div style="text-align:center;font:700 12px 'Hanken Grotesk',sans-serif;color:#9a8c7c;margin-top:7px;">3</div></div>
+        <div style="position:relative;"><div style="background:#fff;border:2px solid #211A12;border-radius:8px;aspect-ratio:3/4;padding:11px;"><div style="width:55%;height:5px;background:#F2922B;border-radius:3px;"></div><div style="width:100%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:8px;"></div><div style="width:85%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:92%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div></div><div style="position:absolute;bottom:34px;right:5px;width:24px;height:24px;border-radius:50%;background:#211A12;color:#F2922B;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 4v5h-5"/></svg></div><div style="text-align:center;font:700 12px 'Hanken Grotesk',sans-serif;color:#9a8c7c;margin-top:7px;">4</div></div>
+        <div style="position:relative;"><div style="background:#fff;border:2px solid #211A12;border-radius:8px;aspect-ratio:3/4;padding:11px;"><div style="width:55%;height:5px;background:#F2922B;border-radius:3px;"></div><div style="width:100%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:8px;"></div><div style="width:85%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:92%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div></div><div style="position:absolute;bottom:34px;right:5px;width:24px;height:24px;border-radius:50%;background:#211A12;color:#F2922B;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 4v5h-5"/></svg></div><div style="text-align:center;font:700 12px 'Hanken Grotesk',sans-serif;color:#9a8c7c;margin-top:7px;">5</div></div>
+        <div style="position:relative;"><div style="background:#fff;border:2px solid #211A12;border-radius:8px;aspect-ratio:3/4;padding:11px;"><div style="width:55%;height:5px;background:#F2922B;border-radius:3px;"></div><div style="width:100%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:8px;"></div><div style="width:85%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div><div style="width:92%;height:4px;background:#E7DDCE;border-radius:2px;margin-top:5px;"></div></div><div style="position:absolute;bottom:34px;right:5px;width:24px;height:24px;border-radius:50%;background:#211A12;color:#F2922B;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 4v5h-5"/></svg></div><div style="text-align:center;font:700 12px 'Hanken Grotesk',sans-serif;color:#9a8c7c;margin-top:7px;">6</div></div>
+      </div>
+      <div style="height:2.5px;background:#211A12;margin:22px 0;border-radius:2px;"></div>
+      <div style="display:flex;align-items:center;gap:18px;">
+        <div style="font:700 15px 'Hanken Grotesk',sans-serif;color:#211A12;">Page 2 rotated 90° · order unchanged</div>
+        <div style="margin-left:auto;background:#211A12;color:#fff;border:2.5px solid #211A12;border-radius:14px;padding:16px 30px;font:800 17px 'Bricolage Grotesque',sans-serif;box-shadow:5px 5px 0 #F2922B;display:flex;align-items:center;gap:10px;text-transform:uppercase;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M20 6L9 17l-5-5"/></svg>Save changes</div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if></x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showFlow&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    return { showFlow: this.props.showFlow ?? true };
+  }
+}
+</script>
+</body>
+</html>

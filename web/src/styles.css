@@ -1,130 +1,69 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/figtree";
-@import "@fontsource-variable/geist";
-@import "@fontsource-variable/geist-mono";
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Chowbea PDF — "Bold Blocks" design system.
+ * One amber does the talking, ink carries every border and the type, warm
+ * creams keep surfaces soft. Chunky outlines, hard offset shadows, no blur.
+ */
 :root {
-    /* Grayscale palette with a single orange brand accent, mirroring the portfolio. */
-    --background: oklch(0.9551 0 0);
-    --foreground: oklch(0.205 0 0);
-    --card: oklch(0.9702 0 0);
-    --card-foreground: oklch(0.205 0 0);
-    --popover: oklch(0.9702 0 0);
-    --popover-foreground: oklch(0.205 0 0);
-    --primary: oklch(0.4891 0 0);
-    --primary-foreground: oklch(1 0 0);
-    --secondary: oklch(0.9067 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.8853 0 0);
-    --muted-foreground: oklch(0.4341 0 0);
-    --accent: oklch(0.8078 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.5594 0.19 25.8625);
-    --destructive-foreground: oklch(1 0 0);
-    --border: oklch(0.8576 0 0);
-    --input: oklch(0.9067 0 0);
-    --ring: oklch(0.4891 0 0);
-    --chart-1: oklch(0.4891 0 0);
-    --chart-2: oklch(0.4863 0.0361 196.0278);
-    --chart-3: oklch(0.6534 0 0);
-    --chart-4: oklch(0.7316 0 0);
-    --chart-5: oklch(0.8078 0 0);
-    --sidebar: oklch(0.937 0 0);
-    --sidebar-foreground: oklch(0.3211 0 0);
-    --sidebar-primary: oklch(0.4891 0 0);
-    --sidebar-primary-foreground: oklch(1 0 0);
-    --sidebar-accent: oklch(0.8078 0 0);
-    --sidebar-accent-foreground: oklch(0.3211 0 0);
-    --sidebar-border: oklch(0.8576 0 0);
-    --sidebar-ring: oklch(0.4891 0 0);
+    --background: #fff3e2; /* Cream — app background */
+    --foreground: #211a12; /* Ink — text & borders */
+    --card: #ffffff;
+    --card-foreground: #211a12;
+    --popover: #ffffff;
+    --popover-foreground: #211a12;
+    --primary: #211a12; /* Ink — primary actions */
+    --primary-foreground: #fff3e2;
+    --secondary: #fff8ef; /* Surface — inputs, soft fills */
+    --secondary-foreground: #211a12;
+    --muted: #fbe7ce; /* Soft amber — icon wells */
+    --muted-foreground: #8a7d6c; /* Muted — meta, captions */
+    --accent: #f2922b; /* Amber — brand accent */
+    --accent-foreground: #211a12;
+    --destructive: #c0392b;
+    --destructive-foreground: #ffffff;
+    --border: #211a12; /* Ink outline */
+    --input: #fff8ef;
+    --ring: #f2922b;
 
-    /* Single accent used sparingly for highlights and active states. */
-    --brand: #ff9800;
-    --radius: 0.65rem;
+    /* Named palette tokens, mirroring the design-system swatches. */
+    --brand: #f2922b;
+    --ink: #211a12;
+    --amber: #f2922b;
+    --amber-ink: #c0701a; /* Amber pressed into ink — eyebrows */
+    --cream: #fff3e2;
+    --surface: #fff8ef;
+    --soft-amber: #fbe7ce;
+    --line: #e7ddce; /* Skeletons & dividers */
+    --subtext: #5b5043; /* Subtitles & body */
+    --muted-ink: #8a7d6c;
 
-    /* Hard, flat drop shadows (offset down, no blur) for the brutalist feel. */
-    --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 20% / 0.07);
-    --shadow-xs: 0px 2px 0px 0px hsl(0 0% 20% / 0.07);
-    --shadow-sm: 0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 1px 2px -1px hsl(0 0% 20% / 0.15);
-    --shadow: 0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 1px 2px -1px hsl(0 0% 20% / 0.15);
-    --shadow-md: 0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 2px 4px -1px hsl(0 0% 20% / 0.15);
-    --shadow-lg: 0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 4px 6px -1px hsl(0 0% 20% / 0.15);
-    --shadow-xl: 0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 8px 10px -1px hsl(0 0% 20% / 0.15);
-    --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 20% / 0.38);
-}
+    /* Format accents (Convert tiles, file-type tags). */
+    --word: #2b6cb0;
+    --excel: #2f855a;
+    --slides: #c05621;
+    --jpg: #6b46c1;
+    --png: #b7791f;
 
-.dark {
-    --background: oklch(0.2178 0 0);
-    --foreground: oklch(0.9491 0 0);
-    --card: oklch(0.2435 0 0);
-    --card-foreground: oklch(0.9491 0 0);
-    --popover: oklch(0.2435 0 0);
-    --popover-foreground: oklch(0.9491 0 0);
-    --primary: oklch(0.7058 0 0);
-    --primary-foreground: oklch(0.2178 0 0);
-    --secondary: oklch(0.3092 0 0);
-    --secondary-foreground: oklch(0.9491 0 0);
-    --muted: oklch(0.285 0 0);
-    --muted-foreground: oklch(0.7117 0 0);
-    --accent: oklch(0.3715 0 0);
-    --accent-foreground: oklch(0.9491 0 0);
-    --destructive: oklch(0.6591 0.153 22.1703);
-    --destructive-foreground: oklch(1 0 0);
-    --border: oklch(0.329 0 0);
-    --input: oklch(0.3092 0 0);
-    --ring: oklch(0.7058 0 0);
-    --chart-1: oklch(0.7058 0 0);
-    --chart-2: oklch(0.6714 0.0339 206.3482);
-    --chart-3: oklch(0.5452 0 0);
-    --chart-4: oklch(0.4604 0 0);
-    --chart-5: oklch(0.3715 0 0);
-    --sidebar: oklch(0.2393 0 0);
-    --sidebar-foreground: oklch(0.8853 0 0);
-    --sidebar-primary: oklch(0.7058 0 0);
-    --sidebar-primary-foreground: oklch(0.2178 0 0);
-    --sidebar-accent: oklch(0.3715 0 0);
-    --sidebar-accent-foreground: oklch(0.8853 0 0);
-    --sidebar-border: oklch(0.329 0 0);
-    --sidebar-ring: oklch(0.7058 0 0);
-
-    /* Accent stays the same orange; it reads well on the dark grays too. */
-    --brand: #ff9800;
+    --radius: 0.875rem; /* 14px — buttons & chips baseline */
 }
 
 @theme inline {
-    --font-sans: 'Figtree Variable', sans-serif;
-    --font-heading: 'Geist Variable', sans-serif;
-    --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
+    --font-sans: 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --font-heading: 'Bricolage Grotesque', 'Hanken Grotesk', sans-serif;
+    --font-mono: ui-monospace, 'SFMono-Regular', monospace;
+
+    /* shadcn token bridge */
     --color-brand: var(--brand);
-    --shadow-2xs: var(--shadow-2xs);
-    --shadow-xs: var(--shadow-xs);
-    --shadow-sm: var(--shadow-sm);
-    --shadow: var(--shadow);
-    --shadow-md: var(--shadow-md);
-    --shadow-lg: var(--shadow-lg);
-    --shadow-xl: var(--shadow-xl);
-    --shadow-2xl: var(--shadow-2xl);
-    --color-sidebar-ring: var(--sidebar-ring);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar: var(--sidebar);
-    --color-chart-5: var(--chart-5);
-    --color-chart-4: var(--chart-4);
-    --color-chart-3: var(--chart-3);
-    --color-chart-2: var(--chart-2);
-    --color-chart-1: var(--chart-1);
     --color-ring: var(--ring);
     --color-input: var(--input);
     --color-border: var(--border);
     --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
     --color-accent-foreground: var(--accent-foreground);
     --color-accent: var(--accent);
     --color-muted-foreground: var(--muted-foreground);
@@ -139,24 +78,53 @@
     --color-card: var(--card);
     --color-foreground: var(--foreground);
     --color-background: var(--background);
+
+    /* Bold Blocks named colors — usable as bg-amber, border-ink, text-subtext… */
+    --color-ink: var(--ink);
+    --color-amber: var(--amber);
+    --color-amber-ink: var(--amber-ink);
+    --color-cream: var(--cream);
+    --color-surface: var(--surface);
+    --color-soft-amber: var(--soft-amber);
+    --color-line: var(--line);
+    --color-subtext: var(--subtext);
+    --color-muted-ink: var(--muted-ink);
+    --color-word: var(--word);
+    --color-excel: var(--excel);
+    --color-slides: var(--slides);
+    --color-jpg: var(--jpg);
+    --color-png: var(--png);
+
+    /* Hard offset shadows — no blur. Ink for surfaces, amber for "act now". */
+    --shadow-block-sm: 3px 3px 0 var(--ink);
+    --shadow-block: 5px 5px 0 var(--ink);
+    --shadow-block-lg: 6px 6px 0 var(--ink);
+    --shadow-amber-sm: 4px 4px 0 var(--amber);
+    --shadow-amber: 5px 5px 0 var(--amber);
+    --shadow-amber-lg: 7px 7px 0 var(--amber);
+
     --radius-sm: calc(var(--radius) * 0.6);
-    --radius-md: calc(var(--radius) * 0.8);
+    --radius-md: calc(var(--radius) * 0.85);
     --radius-lg: var(--radius);
     --radius-xl: calc(var(--radius) * 1.4);
-    --radius-2xl: calc(var(--radius) * 1.8);
-    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-2xl: calc(var(--radius) * 1.7);
+    --radius-3xl: calc(var(--radius) * 2);
     --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/60;
     }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
     }
   html {
     @apply font-sans;
+    }
+  /* Headlines, buttons and tool titles speak in Bricolage. */
+  h1, h2, h3 {
+    @apply font-heading;
     }
 }
 
@@ -187,21 +155,31 @@
   background: transparent;
 }
 *::-webkit-scrollbar-thumb {
-  background-color: color-mix(in oklch, var(--muted-foreground) 25%, transparent);
-  border-radius: 0;
+  background-color: color-mix(in oklch, var(--ink) 22%, transparent);
+  border-radius: 999px;
 }
 *::-webkit-scrollbar-thumb:hover {
-  background-color: var(--brand);
+  background-color: var(--amber);
 }
 
-/* ============ accent ring that breathes on the live tool ============ */
+/* ============ block press — nudge an element into its hard shadow ============ */
+.press {
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.08s ease;
+}
+.press:active {
+  transform: translate(2px, 2px);
+}
+
+/* ============ amber ring that breathes on the live tool ============ */
 @keyframes brand-breathe {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(255, 152, 0, 0);
+    box-shadow: 0 0 0 0 rgba(242, 146, 43, 0);
   }
   50% {
-    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.18);
+    box-shadow: 0 0 0 4px rgba(242, 146, 43, 0.22);
   }
 }
 .brand-breathe {

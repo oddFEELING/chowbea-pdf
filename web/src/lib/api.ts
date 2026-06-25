@@ -179,6 +179,90 @@ export async function unlockPdf(
   }
 }
 
+/** Encryption strengths exposed by the lock endpoint. */
+export const ENCRYPTION_LEVELS = ["aes-256", "aes-128"] as const
+
+export type EncryptionLevel = (typeof ENCRYPTION_LEVELS)[number]
+
+/** Options for locking a PDF; permissions default to a sensible "view only". */
+export interface LockOptions {
+  password: string
+  allowPrinting: boolean
+  allowCopying: boolean
+  allowEditing: boolean
+  encryption: EncryptionLevel
+}
+
+/** Result of a successful lock request. */
+export interface LockResult {
+  /** The password-protected PDF. */
+  blob: Blob
+  /** Suggested download filename parsed from the response. */
+  filename: string
+}
+
+/**
+ * Add a password to a single PDF and return the protected file.
+ *
+ * Reuses the same upload/processing/download progress phases as the other tools.
+ *
+ * @throws Error with the API's error detail (e.g. already protected) on failure.
+ */
+export async function lockPdf(
+  file: File,
+  options: LockOptions,
+  onProgress?: (progress: CompressionProgress) => void,
+): Promise<LockResult> {
+  const form = new FormData()
+  form.append("file", file)
+  form.append("password", options.password)
+  form.append("allow_printing", String(options.allowPrinting))
+  form.append("allow_copying", String(options.allowCopying))
+  form.append("allow_editing", String(options.allowEditing))
+  form.append("encryption", options.encryption)
+
+  try {
+    const response = await axios.post<Blob>(`${API_BASE_URL}/pdf/lock`, form, {
+      responseType: "blob",
+      onUploadProgress: (event) => {
+        if (!onProgress) return
+        const percent = toPercent(event)
+        // Once the bytes are all sent, the server is busy encrypting.
+        if (percent !== null && percent >= 100) {
+          onProgress({ phase: "processing", percent: null })
+        } else {
+          onProgress({ phase: "uploading", percent })
+        }
+      },
+      onDownloadProgress: (event) => {
+        onProgress?.({ phase: "downloading", percent: toPercent(event) })
+      },
+    })
+
+    const blob = response.data
+    return {
+      blob,
+      filename: parseFilename(response.headers["content-disposition"], `locked-${file.name}`),
+    }
+  } catch (err) {
+    // FastAPI returns errors as { detail: string }. With responseType "blob",
+    // the error body is a Blob we must read back to text to extract the detail.
+    if (axios.isAxiosError(err) && err.response) {
+      let detail = `Request failed with status ${err.response.status}`
+      try {
+        const data = err.response.data
+        const text = data instanceof Blob ? await data.text() : JSON.stringify(data)
+        const parsed = JSON.parse(text)
+        if (typeof parsed?.detail === "string") detail = parsed.detail
+      } catch {
+        // Non-JSON error body; keep the default message.
+      }
+      throw new Error(detail)
+    }
+    throw err instanceof Error ? err : new Error("Something went wrong.")
+  }
+}
+
 /** Trigger a browser download for a Blob. */
 export function downloadBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob)

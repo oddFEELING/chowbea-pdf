@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnlockRouteImport } from './routes/unlock'
+import { Route as LockRouteImport } from './routes/lock'
 import { Route as CompressRouteImport } from './routes/compress'
 import { Route as IndexRouteImport } from './routes/index'
 
 const UnlockRoute = UnlockRouteImport.update({
   id: '/unlock',
   path: '/unlock',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LockRoute = LockRouteImport.update({
+  id: '/lock',
+  path: '/lock',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CompressRoute = CompressRouteImport.update({
@@ -32,30 +38,34 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/compress': typeof CompressRoute
+  '/lock': typeof LockRoute
   '/unlock': typeof UnlockRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/compress': typeof CompressRoute
+  '/lock': typeof LockRoute
   '/unlock': typeof UnlockRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/compress': typeof CompressRoute
+  '/lock': typeof LockRoute
   '/unlock': typeof UnlockRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/compress' | '/unlock'
+  fullPaths: '/' | '/compress' | '/lock' | '/unlock'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/compress' | '/unlock'
-  id: '__root__' | '/' | '/compress' | '/unlock'
+  to: '/' | '/compress' | '/lock' | '/unlock'
+  id: '__root__' | '/' | '/compress' | '/lock' | '/unlock'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CompressRoute: typeof CompressRoute
+  LockRoute: typeof LockRoute
   UnlockRoute: typeof UnlockRoute
 }
 
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/unlock'
       fullPath: '/unlock'
       preLoaderRoute: typeof UnlockRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lock': {
+      id: '/lock'
+      path: '/lock'
+      fullPath: '/lock'
+      preLoaderRoute: typeof LockRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/compress': {
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CompressRoute: CompressRoute,
+  LockRoute: LockRoute,
   UnlockRoute: UnlockRoute,
 }
 export const routeTree = rootRouteImport

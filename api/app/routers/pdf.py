@@ -20,6 +20,12 @@ from app.services.compress import (
     GhostscriptNotInstalledError,
     compress_pdf_file,
 )
+from app.services.lock import (
+    AlreadyProtectedError,
+    EncryptionLevel,
+    LockError,
+    lock_pdf_file,
+)
 from app.services.unlock import (
     IncorrectPasswordError,
     NotEncryptedError,
@@ -203,6 +209,70 @@ async def unlock(
         shutil.rmtree(work_dir, ignore_errors=True)
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except UnlockError as exc:
+        shutil.rmtree(work_dir, ignore_errors=True)
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except Exception:
+        shutil.rmtree(work_dir, ignore_errors=True)
+        raise
+
+
+@router.post(
+    "/lock",
+    summary="Add a password to a PDF file",
+    response_class=FileResponse,
+)
+async def lock(
+    file: UploadFile = File(..., description="A PDF to password-protect."),
+    password: str = Form(..., description="The password that will be required to open the PDF."),
+    allow_printing: bool = Form(True, description="Permit printing the locked PDF."),
+    allow_copying: bool = Form(False, description="Permit copying/extracting text from the PDF."),
+    allow_editing: bool = Form(False, description="Permit editing and annotating the PDF."),
+    encryption: EncryptionLevel = Form(
+        EncryptionLevel.aes256,
+        description="Encryption strength; 'aes-256' is strongest.",
+    ),
+) -> FileResponse:
+    """Encrypt a single uploaded PDF with the given password and stream it back.
+
+    Returns the same document protected by a user (open) password. The temp
+    directory is cleaned up once the response has been sent.
+    """
+    if not password:
+        raise HTTPException(status_code=400, detail="A password is required to lock the PDF.")
+
+    # A working directory for this request; removed after the response is sent.
+    work_dir = Path(tempfile.mkdtemp(prefix="chowbea-lock-"))
+    cleanup = BackgroundTask(shutil.rmtree, work_dir, ignore_errors=True)
+
+    try:
+        name = _safe_name(file.filename, "document.pdf")
+        input_path = work_dir / "input.pdf"
+        output_path = work_dir / "output.pdf"
+
+        await _stream_upload_to_disk(file, input_path)
+        lock_pdf_file(
+            input_path,
+            output_path,
+            password,
+            allow_printing=allow_printing,
+            allow_copying=allow_copying,
+            allow_editing=allow_editing,
+            encryption=encryption,
+        )
+
+        # Prefix the original name so the download is recognisably "locked".
+        download_name = name if name.startswith("locked-") else f"locked-{name}"
+
+        return FileResponse(
+            output_path,
+            media_type="application/pdf",
+            filename=download_name,
+            background=cleanup,
+        )
+    except AlreadyProtectedError as exc:
+        shutil.rmtree(work_dir, ignore_errors=True)
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except LockError as exc:
         shutil.rmtree(work_dir, ignore_errors=True)
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except Exception:

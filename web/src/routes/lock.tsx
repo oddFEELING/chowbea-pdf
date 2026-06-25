@@ -1,0 +1,376 @@
+import { createFileRoute } from "@tanstack/react-router"
+import * as React from "react"
+import { motion } from "motion/react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Download04Icon,
+  Loading03Icon,
+  SquareLock01Icon,
+  ViewIcon,
+  ViewOffIcon,
+} from "@hugeicons/core-free-icons"
+
+import { Button } from "@/components/ui/button"
+import { Progress } from "@/components/ui/progress"
+import { ToggleSwitch } from "@/components/ui/toggle-switch"
+import { Dropzone } from "@/components/dropzone"
+import { FileCard } from "@/components/file-card"
+import { ToolHeader } from "@/components/tool-header"
+import { cn } from "@/lib/utils"
+import {
+  type CompressionProgress,
+  type EncryptionLevel,
+  type LockResult,
+  downloadBlob,
+  formatBytes,
+  lockPdf,
+} from "@/lib/api"
+
+export const Route = createFileRoute("/lock")({ component: LockPage })
+
+const PHASE_LABELS: Record<CompressionProgress["phase"], string> = {
+  uploading: "Uploading",
+  processing: "Locking",
+  downloading: "Downloading",
+}
+
+type Status = "idle" | "loading" | "success" | "error"
+
+// A rough 0–4 strength score from length and character variety.
+const STRENGTH_LABELS = ["", "Weak", "Fair", "Good", "Strong"] as const
+
+function passwordStrength(pw: string): { score: number; label: string } {
+  if (!pw) return { score: 0, label: "" }
+  let score = 0
+  if (pw.length >= 8) score++
+  if (pw.length >= 12) score++
+  if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++
+  if (/\d/.test(pw)) score++
+  if (/[^A-Za-z0-9]/.test(pw)) score++
+  score = Math.min(4, score)
+  return { score, label: STRENGTH_LABELS[score] }
+}
+
+/** An ink-outlined password field with a show/hide eye. */
+function PasswordInput({
+  value,
+  onChange,
+  reveal,
+  onToggleReveal,
+  placeholder,
+  onEnter,
+}: {
+  value: string
+  onChange: (next: string) => void
+  reveal: boolean
+  onToggleReveal: () => void
+  placeholder: string
+  onEnter?: () => void
+}) {
+  return (
+    <div className="flex items-center gap-2 rounded-[12px] border-2 border-ink bg-surface px-4 py-3 focus-within:shadow-block-sm">
+      <input
+        type={reveal ? "text" : "password"}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") onEnter?.()
+        }}
+        placeholder={placeholder}
+        autoComplete="new-password"
+        className="min-w-0 flex-1 bg-transparent text-base font-bold tracking-wide text-ink outline-none placeholder:font-semibold placeholder:tracking-normal placeholder:text-muted-ink"
+      />
+      <button
+        type="button"
+        aria-label={reveal ? "Hide password" : "Show password"}
+        onClick={onToggleReveal}
+        className="flex shrink-0 items-center justify-center text-ink"
+      >
+        <HugeiconsIcon icon={reveal ? ViewOffIcon : ViewIcon} className="size-5" strokeWidth={2.2} />
+      </button>
+    </div>
+  )
+}
+
+const PERMISSIONS = [
+  { key: "allowPrinting", label: "Allow printing" },
+  { key: "allowCopying", label: "Allow copying text" },
+  { key: "allowEditing", label: "Allow editing & annotations" },
+] as const
+
+const ENCRYPTION_CHOICES: Array<{ value: EncryptionLevel; label: string }> = [
+  { value: "aes-256", label: "256-bit AES" },
+  { value: "aes-128", label: "128-bit AES" },
+]
+
+function LockPage() {
+  const [file, setFile] = React.useState<File | null>(null)
+  const [password, setPassword] = React.useState("")
+  const [confirm, setConfirm] = React.useState("")
+  const [showNew, setShowNew] = React.useState(false)
+  const [showConfirm, setShowConfirm] = React.useState(false)
+  const [permissions, setPermissions] = React.useState({
+    allowPrinting: true,
+    allowCopying: false,
+    allowEditing: false,
+  })
+  const [encryption, setEncryption] = React.useState<EncryptionLevel>("aes-256")
+  const [status, setStatus] = React.useState<Status>("idle")
+  const [result, setResult] = React.useState<LockResult | null>(null)
+  const [error, setError] = React.useState<string | null>(null)
+  const [progress, setProgress] = React.useState<CompressionProgress | null>(null)
+  const inputRef = React.useRef<HTMLInputElement>(null)
+
+  // Keep only the first PDF picked — lock works on a single file at a time.
+  const pickFile = React.useCallback((incoming: FileList | null) => {
+    if (!incoming || incoming.length === 0) return
+    const pdf = Array.from(incoming).find(
+      (f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf"),
+    )
+    if (!pdf) return
+    setFile(pdf)
+    setStatus("idle")
+    setResult(null)
+    setError(null)
+  }, [])
+
+  const strength = passwordStrength(password)
+  const mismatch = confirm.length > 0 && confirm !== password
+  const canSubmit =
+    Boolean(file) && password.length > 0 && password === confirm && status !== "loading"
+
+  const handleLock = async () => {
+    if (!canSubmit || !file) return
+    setStatus("loading")
+    setError(null)
+    setResult(null)
+    setProgress({ phase: "uploading", percent: 0 })
+    try {
+      const locked = await lockPdf(file, { password, encryption, ...permissions }, setProgress)
+      setResult(locked)
+      setStatus("success")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.")
+      setStatus("error")
+    } finally {
+      setProgress(null)
+    }
+  }
+
+  const reset = () => {
+    setFile(null)
+    setPassword("")
+    setConfirm("")
+    setStatus("idle")
+    setResult(null)
+    setError(null)
+  }
+
+  return (
+    <div className="pb-4">
+      <ToolHeader
+        icon={SquareLock01Icon}
+        title="Lock PDF"
+        subtitle="Add a password so only the right people can open it."
+      />
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept="application/pdf,.pdf"
+        className="hidden"
+        onChange={(event) => pickFile(event.target.files)}
+      />
+
+      <div className="mt-8 grid grid-cols-1 items-start gap-7 lg:grid-cols-[360px_1fr]">
+        {/* ── Left: file ── */}
+        {!file ? (
+          <Dropzone
+            onFiles={pickFile}
+            onPick={() => inputRef.current?.click()}
+            title="Drop a PDF here"
+            hint="One file at a time"
+          />
+        ) : (
+          <FileCard
+            name={file.name}
+            meta={formatBytes(file.size)}
+            onReplace={reset}
+          />
+        )}
+
+        {/* ── Right: settings ── */}
+        <div className="rounded-[20px] border-2 border-ink bg-card p-6 shadow-block-lg sm:p-8">
+          {/* Passwords */}
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div>
+              <div className="mb-2 text-[13px] font-extrabold uppercase tracking-wide text-ink">
+                New password
+              </div>
+              <PasswordInput
+                value={password}
+                onChange={setPassword}
+                reveal={showNew}
+                onToggleReveal={() => setShowNew((v) => !v)}
+                placeholder="Choose a password"
+                onEnter={handleLock}
+              />
+            </div>
+            <div>
+              <div className="mb-2 text-[13px] font-extrabold uppercase tracking-wide text-ink">
+                Confirm password
+              </div>
+              <PasswordInput
+                value={confirm}
+                onChange={setConfirm}
+                reveal={showConfirm}
+                onToggleReveal={() => setShowConfirm((v) => !v)}
+                placeholder="Repeat it"
+                onEnter={handleLock}
+              />
+            </div>
+          </div>
+
+          {/* Strength + mismatch */}
+          <div className="mt-3.5 flex items-center gap-3">
+            <div className="flex flex-1 gap-1.5">
+              {[0, 1, 2, 3].map((i) => (
+                <span
+                  key={i}
+                  className={cn(
+                    "h-2 flex-1 rounded border-2 border-ink",
+                    i < strength.score ? "bg-amber" : "bg-card",
+                  )}
+                />
+              ))}
+            </div>
+            {strength.label && (
+              <span className="text-[13px] font-extrabold uppercase tracking-wide text-ink">
+                {strength.label}
+              </span>
+            )}
+          </div>
+          {mismatch && (
+            <p className="mt-2 text-[13px] font-bold text-destructive">Passwords don&rsquo;t match.</p>
+          )}
+
+          <div className="my-6 h-[2.5px] rounded bg-ink" />
+
+          {/* Permissions */}
+          <div className="mb-4 font-heading text-base font-extrabold text-ink">Permissions</div>
+          <div className="flex flex-col gap-3.5">
+            {PERMISSIONS.map((perm) => (
+              <div key={perm.key} className="flex items-center justify-between">
+                <span className="text-[15px] font-semibold text-ink">{perm.label}</span>
+                <ToggleSwitch
+                  label={perm.label}
+                  checked={permissions[perm.key]}
+                  onChange={(next) =>
+                    setPermissions((current) => ({ ...current, [perm.key]: next }))
+                  }
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Encryption */}
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+            <span className="text-[15px] font-semibold text-ink">Encryption</span>
+            <div className="flex w-fit overflow-hidden rounded-[12px] border-2 border-ink shadow-block-sm">
+              {ENCRYPTION_CHOICES.map((choice, i) => (
+                <button
+                  key={choice.value}
+                  type="button"
+                  onClick={() => setEncryption(choice.value)}
+                  className={cn(
+                    "px-4 py-2.5 text-[13px] font-extrabold uppercase tracking-wide transition-colors",
+                    i > 0 && "border-l-2 border-ink",
+                    encryption === choice.value ? "bg-ink text-cream" : "bg-card text-ink",
+                  )}
+                >
+                  {choice.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="mt-7 flex items-center gap-3.5">
+            <Button size="lg" onClick={handleLock} disabled={!canSubmit} className="flex-1">
+              {status === "loading" ? (
+                <>
+                  <HugeiconsIcon icon={Loading03Icon} className="animate-spin" />
+                  Locking…
+                </>
+              ) : (
+                <>
+                  <HugeiconsIcon icon={SquareLock01Icon} strokeWidth={2.2} />
+                  Lock PDF
+                </>
+              )}
+            </Button>
+            <Button variant="outline" size="lg" onClick={reset} disabled={status === "loading"}>
+              Cancel
+            </Button>
+          </div>
+
+          {/* Progress */}
+          {status === "loading" && progress && (
+            <div className="mt-5 flex flex-col gap-2">
+              <div className="flex items-center justify-between text-[13px] font-extrabold uppercase tracking-wide text-muted-ink">
+                <span>{PHASE_LABELS[progress.phase]}…</span>
+                {progress.percent !== null && (
+                  <span className="tabular-nums text-ink">{Math.round(progress.percent)}%</span>
+                )}
+              </div>
+              {progress.percent !== null ? (
+                <Progress value={progress.percent} />
+              ) : (
+                <div className="h-2.5 w-full overflow-hidden rounded-full border-2 border-ink bg-surface">
+                  <div className="animate-indeterminate h-full w-2/5 rounded-full bg-amber" />
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Error */}
+          {status === "error" && error && (
+            <p className="mt-5 rounded-[12px] border-2 border-destructive bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive">
+              {error}
+            </p>
+          )}
+
+          {/* Result */}
+          {status === "success" && result && (
+            <motion.div
+              className="mt-5 rounded-[16px] border-2 border-ink bg-cream p-5 shadow-amber-sm"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35 }}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-heading text-lg font-extrabold text-ink">Locked</span>
+                <span className="rounded-full bg-ink px-3.5 py-1.5 text-[13px] font-extrabold uppercase tracking-wide text-cream">
+                  {encryption === "aes-256" ? "256-bit AES" : "128-bit AES"}
+                </span>
+              </div>
+              <p className="mt-2 text-sm font-semibold text-subtext">
+                Your PDF now asks for this password before it opens. Keep it somewhere safe — we
+                can&rsquo;t recover it.
+              </p>
+              <Button
+                variant="outline"
+                size="lg"
+                className="mt-4 w-full"
+                onClick={() => downloadBlob(result.blob, result.filename)}
+              >
+                <HugeiconsIcon icon={Download04Icon} strokeWidth={2.2} />
+                Download
+              </Button>
+            </motion.div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

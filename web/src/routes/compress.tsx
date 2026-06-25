@@ -1,20 +1,21 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import * as React from "react"
 import { motion } from "motion/react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Add01Icon,
-  ArrowLeft01Icon,
+  ArrowRight02Icon,
   Cancel01Icon,
   Download04Icon,
   Loading03Icon,
   Minimize01Icon,
   Pdf01Icon,
-  Upload04Icon,
 } from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
+import { Dropzone } from "@/components/dropzone"
+import { ToolHeader } from "@/components/tool-header"
 import { cn } from "@/lib/utils"
 import {
   type CompressionProgress,
@@ -27,36 +28,26 @@ import {
 
 export const Route = createFileRoute("/compress")({ component: CompressPage })
 
-// Human-readable labels for each phase of an in-flight compression request.
 const PHASE_LABELS: Record<CompressionProgress["phase"], string> = {
   uploading: "Uploading",
   processing: "Compressing",
   downloading: "Downloading",
 }
 
-// Quality presets shown in the segmented selector, mirroring the API's enum.
+// Quality presets, mirroring the API enum but worded for humans.
 const QUALITY_OPTIONS: Array<{
   value: CompressionQuality
   label: string
   hint: string
+  dpi: string
 }> = [
-  { value: "screen", label: "Smallest", hint: "72 dpi" },
-  { value: "ebook", label: "Recommended", hint: "150 dpi" },
-  { value: "printer", label: "High", hint: "300 dpi" },
-  { value: "prepress", label: "Maximum", hint: "300 dpi+" },
+  { value: "ebook", label: "Recommended", hint: "Great quality, much smaller", dpi: "150 dpi" },
+  { value: "screen", label: "Strong", hint: "Smallest — great for email", dpi: "72 dpi" },
+  { value: "printer", label: "Light", hint: "Highest quality, light trim", dpi: "300 dpi" },
+  { value: "prepress", label: "Maximum", hint: "Print-ready, barely trimmed", dpi: "300 dpi+" },
 ]
 
 type Status = "idle" | "loading" | "success" | "error"
-
-// A small mono section label used to number the workspace steps.
-function StepLabel({ step, children }: { step: string; children: React.ReactNode }) {
-  return (
-    <span className="flex items-center gap-2 font-mono text-[0.65rem] uppercase tracking-[0.25em] text-muted-foreground">
-      <span className="font-medium text-foreground">{step}</span>
-      {children}
-    </span>
-  )
-}
 
 function CompressPage() {
   const [files, setFiles] = React.useState<File[]>([])
@@ -65,7 +56,6 @@ function CompressPage() {
   const [result, setResult] = React.useState<CompressionResult | null>(null)
   const [error, setError] = React.useState<string | null>(null)
   const [progress, setProgress] = React.useState<CompressionProgress | null>(null)
-  const [isDragging, setIsDragging] = React.useState(false)
   const inputRef = React.useRef<HTMLInputElement>(null)
 
   // Merge newly picked files into state, keeping only PDFs and skipping duplicates.
@@ -88,12 +78,6 @@ function CompressPage() {
     setFiles((current) => current.filter((_, i) => i !== index))
     setStatus("idle")
     setResult(null)
-  }
-
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault()
-    setIsDragging(false)
-    addFiles(event.dataTransfer.files)
   }
 
   const handleCompress = async () => {
@@ -119,228 +103,203 @@ function CompressPage() {
     result && result.originalSize > 0
       ? Math.max(0, 1 - result.compressedSize / result.originalSize)
       : 0
+  const hasFiles = files.length > 0
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-      {/* ── Tool header strip ── */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b px-5 py-4 sm:px-8">
-        <div className="flex items-center gap-4">
-          <Link
-            to="/"
-            aria-label="Back to all tools"
-            className="flex size-9 items-center justify-center border text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
-          >
-            <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" strokeWidth={1.8} />
-          </Link>
-          <span className="flex size-10 items-center justify-center border bg-muted/40 text-muted-foreground">
-            <HugeiconsIcon icon={Minimize01Icon} className="size-5" strokeWidth={1.8} />
-          </span>
-          <div className="flex flex-col">
-            <h1 className="font-heading text-lg font-semibold tracking-tight">Compress PDFs</h1>
-            <span className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-              Powered by Ghostscript
-            </span>
-          </div>
-        </div>
-        <span className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-          {files.length > 0 ? `${files.length} queued · ${formatBytes(totalSize)}` : "No files yet"}
-        </span>
-      </div>
+    <div className="pb-4">
+      <ToolHeader
+        icon={Minimize01Icon}
+        title="Compress PDF"
+        subtitle="Make the file smaller while keeping it sharp."
+      />
 
-      {/* ── Compact, centered workspace ── */}
-      <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-5 py-8 sm:px-8">
-        {/* 01 — files */}
-        <div className="flex flex-col gap-3">
-          <StepLabel step="01">Add files</StepLabel>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="application/pdf,.pdf"
+        multiple
+        className="hidden"
+        onChange={(event) => addFiles(event.target.files)}
+      />
 
-          {files.length === 0 ? (
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => inputRef.current?.click()}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") inputRef.current?.click()
-              }}
-              onDragOver={(event) => {
-                event.preventDefault()
-                setIsDragging(true)
-              }}
-              onDragLeave={() => setIsDragging(false)}
-              onDrop={handleDrop}
-              className={cn(
-                "flex min-h-[150px] cursor-pointer flex-col items-center justify-center gap-3 border border-dashed text-center transition-colors",
-                isDragging
-                  ? "border-[#ff9800] bg-[#ff9800]/5"
-                  : "border-border hover:border-foreground/30 hover:bg-muted/30",
-              )}
-            >
-              <div className="flex size-11 items-center justify-center border bg-muted/40 text-muted-foreground">
-                <HugeiconsIcon icon={Upload04Icon} className="size-5" strokeWidth={1.8} />
-              </div>
-              <div className="space-y-1">
-                <p className="text-sm font-medium">
-                  Drop PDFs here or <span className="text-[#ff9800]">browse</span>
-                </p>
-                <p className="font-mono text-[0.6rem] uppercase tracking-[0.15em] text-muted-foreground">
-                  Multiple files supported
-                </p>
-              </div>
+      <div className="mt-8 grid grid-cols-1 items-start gap-7 lg:grid-cols-[360px_1fr]">
+        {/* ── Left: files ── */}
+        {!hasFiles ? (
+          <Dropzone
+            multiple
+            onFiles={addFiles}
+            onPick={() => inputRef.current?.click()}
+            title="Drop PDFs here"
+            hint="Multiple files supported"
+          />
+        ) : (
+          <div className="rounded-[20px] border-2 border-ink bg-card p-[22px] shadow-block-lg">
+            <div className="mb-4 flex items-center justify-between">
+              <span className="text-[13px] font-extrabold uppercase tracking-wide text-muted-ink">
+                {files.length} file{files.length > 1 ? "s" : ""}
+              </span>
+              <span className="text-[13px] font-bold text-muted-ink">{formatBytes(totalSize)}</span>
             </div>
-          ) : (
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-col gap-px border">
-                {files.map((file, index) => (
-                  <div
-                    key={`${file.name}:${file.size}`}
-                    className="flex items-center gap-3 bg-card px-3 py-2.5"
-                  >
-                    <HugeiconsIcon
-                      icon={Pdf01Icon}
-                      className="size-4 shrink-0 text-muted-foreground"
-                      strokeWidth={1.8}
-                    />
-                    <span className="min-w-0 flex-1 truncate text-sm">{file.name}</span>
-                    <span className="shrink-0 font-mono text-xs text-muted-foreground">
+
+            <div className="flex flex-col gap-2.5">
+              {files.map((file, index) => (
+                <div
+                  key={`${file.name}:${file.size}`}
+                  className="flex items-center gap-3 rounded-[14px] border-2 border-ink bg-surface px-3 py-2.5"
+                >
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-[10px] border-2 border-ink bg-soft-amber text-ink">
+                    <HugeiconsIcon icon={Pdf01Icon} className="size-5" strokeWidth={2} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate font-heading text-[15px] font-extrabold text-ink">
+                      {file.name}
+                    </div>
+                    <div className="text-[13px] font-semibold text-muted-ink">
                       {formatBytes(file.size)}
-                    </span>
-                    <button
-                      type="button"
-                      aria-label={`Remove ${file.name}`}
-                      onClick={() => removeFile(index)}
-                      className="flex size-6 shrink-0 items-center justify-center border border-transparent text-muted-foreground transition-colors hover:border-border hover:text-foreground"
-                    >
-                      <HugeiconsIcon icon={Cancel01Icon} className="size-3.5" />
-                    </button>
+                    </div>
                   </div>
-                ))}
-              </div>
+                  <button
+                    type="button"
+                    aria-label={`Remove ${file.name}`}
+                    onClick={() => removeFile(index)}
+                    className="press flex size-8 shrink-0 items-center justify-center rounded-[9px] border-2 border-ink text-ink"
+                  >
+                    <HugeiconsIcon icon={Cancel01Icon} className="size-4" strokeWidth={2.4} />
+                  </button>
+                </div>
+              ))}
+
               <button
                 type="button"
                 onClick={() => inputRef.current?.click()}
-                className="flex items-center justify-center gap-2 border border-dashed border-border py-2 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
+                className="flex items-center justify-center gap-2 rounded-[14px] border-2 border-dashed border-[#c9b89c] py-3 text-[13px] font-extrabold uppercase tracking-wide text-muted-ink transition-colors hover:border-ink hover:text-ink"
               >
-                <HugeiconsIcon icon={Add01Icon} className="size-3.5" />
-                Add more
+                <HugeiconsIcon icon={Add01Icon} className="size-4" strokeWidth={2.4} />
+                Add more files
               </button>
             </div>
-          )}
-
-          <input
-            ref={inputRef}
-            type="file"
-            accept="application/pdf,.pdf"
-            multiple
-            className="hidden"
-            onChange={(event) => addFiles(event.target.files)}
-          />
-        </div>
-
-        {/* 02 — quality */}
-        <div className="flex flex-col gap-3">
-          <StepLabel step="02">Quality</StepLabel>
-          <div className="grid grid-cols-2 sm:grid-cols-4">
-            {QUALITY_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => setQuality(option.value)}
-                className={cn(
-                  "-mr-px -mb-px flex flex-col gap-0.5 border p-3 text-left transition-colors",
-                  quality === option.value
-                    ? "border-[#ff9800] bg-[#ff9800]/5"
-                    : "border-border hover:bg-muted/30",
-                )}
-              >
-                <span className="text-sm font-medium text-foreground">{option.label}</span>
-                <span className="font-mono text-[0.6rem] uppercase tracking-[0.15em] text-muted-foreground">
-                  {option.hint}
-                </span>
-              </button>
-            ))}
           </div>
-        </div>
+        )}
 
-        <Button
-          size="lg"
-          onClick={handleCompress}
-          disabled={files.length === 0 || status === "loading"}
-          className="w-full rounded-none bg-[#ff9800] text-white shadow-[3px_3px_0_0_rgba(0,0,0,0.18)] transition-all hover:bg-[#ff9800]/90 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none disabled:opacity-50 disabled:shadow-none dark:text-background"
-        >
-          {status === "loading" ? (
-            <>
-              <HugeiconsIcon icon={Loading03Icon} className="animate-spin" />
-              Compressing…
-            </>
-          ) : (
-            <>
-              <HugeiconsIcon icon={Minimize01Icon} strokeWidth={1.8} />
-              Compress{files.length > 0 ? ` ${files.length} file${files.length > 1 ? "s" : ""}` : ""}
-            </>
-          )}
-        </Button>
+        {/* ── Right: settings ── */}
+        <div className="rounded-[20px] border-2 border-ink bg-card p-6 shadow-block-lg sm:p-8">
+          <div className="mb-3.5 text-[13px] font-extrabold uppercase tracking-wide text-ink">
+            Compression level
+          </div>
+          <div className="flex flex-col gap-3">
+            {QUALITY_OPTIONS.map((option) => {
+              const selected = quality === option.value
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setQuality(option.value)}
+                  className={cn(
+                    "flex items-center gap-3.5 rounded-[14px] border-2 border-ink p-4 text-left transition-[background-color,box-shadow]",
+                    selected ? "bg-surface shadow-amber-sm" : "bg-card hover:bg-surface",
+                  )}
+                >
+                  <span className="flex size-[22px] shrink-0 items-center justify-center rounded-full border-2 border-ink">
+                    {selected && <span className="size-2.5 rounded-full bg-amber" />}
+                  </span>
+                  <span className="flex-1">
+                    <span className="block font-heading text-[17px] font-extrabold text-ink">
+                      {option.label}
+                    </span>
+                    <span className="block text-[13px] font-semibold text-[#6b5f50]">
+                      {option.hint}
+                    </span>
+                  </span>
+                  <span
+                    className={cn(
+                      "rounded-full border-2 border-ink px-3 py-1 text-[13px] font-extrabold text-ink",
+                      selected ? "bg-amber" : "bg-card",
+                    )}
+                  >
+                    {option.dpi}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
 
-        {/* Progress */}
-        {status === "loading" && progress && (
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center justify-between font-mono text-[0.65rem] uppercase tracking-[0.15em] text-muted-foreground">
-              <span>{PHASE_LABELS[progress.phase]}…</span>
-              {progress.percent !== null && (
-                <span className="tabular-nums">{Math.round(progress.percent)}%</span>
+          <Button
+            size="lg"
+            onClick={handleCompress}
+            disabled={!hasFiles || status === "loading"}
+            className="mt-6 w-full"
+          >
+            {status === "loading" ? (
+              <>
+                <HugeiconsIcon icon={Loading03Icon} className="animate-spin" />
+                Compressing…
+              </>
+            ) : (
+              <>
+                <HugeiconsIcon icon={Minimize01Icon} strokeWidth={2.2} />
+                Compress{hasFiles ? ` ${files.length} file${files.length > 1 ? "s" : ""}` : ""}
+              </>
+            )}
+          </Button>
+
+          {/* Progress */}
+          {status === "loading" && progress && (
+            <div className="mt-5 flex flex-col gap-2">
+              <div className="flex items-center justify-between text-[13px] font-extrabold uppercase tracking-wide text-muted-ink">
+                <span>{PHASE_LABELS[progress.phase]}…</span>
+                {progress.percent !== null && (
+                  <span className="tabular-nums text-ink">{Math.round(progress.percent)}%</span>
+                )}
+              </div>
+              {progress.percent !== null ? (
+                <Progress value={progress.percent} />
+              ) : (
+                <div className="h-2.5 w-full overflow-hidden rounded-full border-2 border-ink bg-surface">
+                  <div className="animate-indeterminate h-full w-2/5 rounded-full bg-amber" />
+                </div>
               )}
             </div>
-            {progress.percent !== null ? (
-              <Progress value={progress.percent} className="rounded-none" />
-            ) : (
-              <div className="h-1.5 w-full overflow-hidden bg-muted">
-                <div className="animate-indeterminate h-full w-2/5 bg-[#ff9800]" />
-              </div>
-            )}
-          </div>
-        )}
+          )}
 
-        {/* Error */}
-        {status === "error" && error && (
-          <p className="border border-destructive/30 bg-destructive/10 px-3 py-2 font-mono text-xs text-destructive">
-            {error}
-          </p>
-        )}
+          {/* Error */}
+          {status === "error" && error && (
+            <p className="mt-5 rounded-[12px] border-2 border-destructive bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive">
+              {error}
+            </p>
+          )}
 
-        {/* Result */}
-        {status === "success" && result && (
-          <motion.div
-            className="flex flex-col gap-4 border border-[#ff9800]/40 bg-[#ff9800]/[0.04] p-4"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35 }}
-          >
-            <div className="flex items-center justify-between">
-              <StepLabel step="03">Done</StepLabel>
-              <span className="border border-[#ff9800]/40 bg-[#ff9800]/10 px-2 py-0.5 font-mono text-[0.65rem] font-medium uppercase tracking-[0.15em] text-[#ff9800]">
-                {Math.round(savedRatio * 100)}% smaller
-              </span>
-            </div>
-            <div className="flex items-baseline gap-3 font-mono">
-              <span className="text-muted-foreground line-through">
-                {formatBytes(result.originalSize)}
-              </span>
-              <HugeiconsIcon
-                icon={ArrowLeft01Icon}
-                className="size-4 rotate-180 text-muted-foreground"
-              />
-              <span className="text-lg font-semibold text-foreground">
-                {formatBytes(result.compressedSize)}
-              </span>
-            </div>
-            <Button
-              variant="outline"
-              className="w-full rounded-none"
-              onClick={() => downloadBlob(result.blob, result.filename)}
+          {/* Result */}
+          {status === "success" && result && (
+            <motion.div
+              className="mt-5 rounded-[16px] border-2 border-ink bg-cream p-5 shadow-amber-sm"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35 }}
             >
-              <HugeiconsIcon icon={Download04Icon} />
-              Download {result.filename}
-            </Button>
-          </motion.div>
-        )}
+              <div className="flex flex-wrap items-center gap-3.5">
+                <span className="font-heading text-xl font-extrabold text-ink">
+                  {formatBytes(result.originalSize)}
+                </span>
+                <HugeiconsIcon icon={ArrowRight02Icon} className="size-5 text-ink" strokeWidth={2.4} />
+                <span className="font-heading text-xl font-extrabold text-ink">
+                  {formatBytes(result.compressedSize)}
+                </span>
+                <span className="ml-auto rounded-full bg-ink px-3.5 py-1.5 text-[13px] font-extrabold uppercase tracking-wide text-cream">
+                  {Math.round(savedRatio * 100)}% smaller
+                </span>
+              </div>
+              <Button
+                variant="outline"
+                size="lg"
+                className="mt-4 w-full"
+                onClick={() => downloadBlob(result.blob, result.filename)}
+              >
+                <HugeiconsIcon icon={Download04Icon} strokeWidth={2.2} />
+                Download
+              </Button>
+            </motion.div>
+          )}
+        </div>
       </div>
     </div>
   )

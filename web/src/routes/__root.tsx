@@ -1,78 +1,118 @@
-import { HeadContent, Link, Scripts, createRootRoute } from "@tanstack/react-router"
+import {
+  HeadContent,
+  Link,
+  Scripts,
+  createRootRoute,
+} from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
-import { ThemeProvider } from "next-themes"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { File01Icon, Login03Icon } from "@hugeicons/core-free-icons"
 
-import { ThemeToggle } from "@/components/theme-toggle"
 import appCss from "../styles.css?url"
 
 export const Route = createRootRoute({
   head: () => ({
     meta: [
-      {
-        charSet: "utf-8",
-      },
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1",
-      },
+      { charSet: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
       {
         name: "description",
-        content: "Compress and process your PDF files quickly and privately.",
+        content:
+          "Bold, free PDF tools. Pick a tool, drop a PDF — your files never leave the browser.",
       },
-      {
-        title: "Chowbea PDF",
-      },
+      { name: "theme-color", content: "#FFF3E2" },
+      { title: "Chowbea PDF" },
     ],
     links: [
+      // Bold Blocks type: Bricolage Grotesque (display) + Hanken Grotesk (body).
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      {
+        rel: "preconnect",
+        href: "https://fonts.gstatic.com",
+        crossOrigin: "anonymous",
+      },
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap",
       },
+      { rel: "stylesheet", href: appCss },
     ],
   }),
   notFoundComponent: () => (
-    <main className="container mx-auto p-4 pt-16">
-      <h1>404</h1>
-      <p>The requested page could not be found.</p>
-    </main>
+    <div className="flex flex-col items-center justify-center gap-4 py-32 text-center">
+      <div className="font-heading text-7xl font-extrabold text-ink uppercase">
+        404
+      </div>
+      <p className="text-lg font-medium text-subtext">
+        That page wandered off.
+      </p>
+      <Link
+        to="/"
+        className="press inline-flex items-center gap-2 rounded-full border-2 border-ink bg-card px-5 py-2.5 text-sm font-extrabold tracking-wide text-ink uppercase shadow-block-sm"
+      >
+        Back to tools
+      </Link>
+    </div>
   ),
   shellComponent: RootDocument,
 })
 
+/** Amber logo block + wordmark — the constant top-left mark on every screen. */
+function Wordmark() {
+  return (
+    <Link to="/" className="flex items-center gap-3">
+      <span className="flex size-10 items-center justify-center rounded-xl border-2 border-ink bg-amber text-ink">
+        <HugeiconsIcon icon={File01Icon} className="size-5" strokeWidth={2.4} />
+      </span>
+      <span className="font-heading text-xl font-extrabold tracking-tight text-ink">
+        Chowbea PDF
+      </span>
+    </Link>
+  )
+}
+
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    // suppressHydrationWarning: next-themes sets the theme class on the client.
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <head>
         <HeadContent />
       </head>
       <body>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {/* Scrolls on mobile (the stacked layout needs the room); locked to a
-              single screen from md up where the grid has space to breathe. */}
-          <div className="flex min-h-svh flex-col md:h-svh md:overflow-hidden">
-            {/* Centered max-width column, framed with side borders. */}
-            <div className="mx-auto flex w-full min-h-0 max-w-6xl flex-1 flex-col border-border sm:border-x">
-            {/* Top bar: mono wordmark on the left, theme switch as its own cell. */}
-            <header className="flex h-14 shrink-0 items-stretch justify-between border-b">
-              <Link to="/" className="flex items-center border-r px-4 sm:px-5">
-                <span className="flex items-center gap-1.5 font-mono text-sm font-medium uppercase tracking-[0.18em]">
-                  Chowbea
-                  <span className="text-muted-foreground/40">/</span>
-                  <span className="text-[#ff9800]">PDF</span>
-                </span>
-              </Link>
-              <ThemeToggle />
+        <div className="min-h-svh bg-cream">
+          <div className="mx-auto flex min-h-svh w-full max-w-7xl flex-col px-5 py-7 sm:px-8 sm:py-9 lg:px-10">
+            {/* Top bar: wordmark left, sign-in pill right. */}
+            <header className="flex items-center justify-between">
+              <Wordmark />
+              <button
+                type="button"
+                className="press inline-flex items-center gap-2 rounded-full border-2 border-ink bg-card px-5 py-2.5 text-sm font-extrabold tracking-wide text-ink uppercase shadow-block-sm"
+              >
+                <HugeiconsIcon
+                  icon={Login03Icon}
+                  className="size-4"
+                  strokeWidth={2.2}
+                />
+                Sign in
+              </button>
             </header>
-            <main className="flex min-h-0 flex-1 flex-col">{children}</main>
-            </div>
+
+            <main className="flex-1">{children}</main>
+
+            {/* Footer line, echoing the design-system footer. */}
+            <footer className="mt-14 flex flex-col items-center justify-between gap-3 border-t-[3px] border-ink pt-6 sm:flex-row">
+              <span className="font-heading text-sm font-extrabold text-ink">
+                Chowbea PDF — Bold Blocks
+              </span>
+              <span className="text-[13px] font-semibold text-muted-ink">
+                Free &amp; ad-free · your files never leave the browser
+              </span>
+            </footer>
           </div>
-        </ThemeProvider>
+        </div>
+
         <TanStackDevtools
-          config={{
-            position: "bottom-right",
-          }}
+          config={{ position: "bottom-right" }}
           plugins={[
             {
               name: "Tanstack Router",
