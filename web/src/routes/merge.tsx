@@ -51,7 +51,13 @@ function MergePage() {
     )
     setFiles((current) => {
       const seen = new Set(current.map((f) => `${f.name}:${f.size}`))
-      const unique = pdfs.filter((f) => !seen.has(`${f.name}:${f.size}`))
+      const unique: File[] = []
+      for (const file of pdfs) {
+        const key = `${file.name}:${file.size}`
+        if (seen.has(key)) continue
+        seen.add(key)
+        unique.push(file)
+      }
       return [...current, ...unique]
     })
     setStatus("idle")
@@ -159,7 +165,7 @@ function MergePage() {
                     <button
                       type="button"
                       aria-label={`Move ${file.name} up`}
-                      disabled={index === 0}
+                      disabled={index === 0 || status === "loading"}
                       onClick={() => moveFile(index, -1)}
                       className="press flex size-8 items-center justify-center rounded-[9px] border-2 border-ink text-ink disabled:opacity-30"
                     >
@@ -168,7 +174,7 @@ function MergePage() {
                     <button
                       type="button"
                       aria-label={`Move ${file.name} down`}
-                      disabled={index === files.length - 1}
+                      disabled={index === files.length - 1 || status === "loading"}
                       onClick={() => moveFile(index, 1)}
                       className="press flex size-8 items-center justify-center rounded-[9px] border-2 border-ink text-ink disabled:opacity-30"
                     >
@@ -177,8 +183,9 @@ function MergePage() {
                     <button
                       type="button"
                       aria-label={`Remove ${file.name}`}
+                      disabled={status === "loading"}
                       onClick={() => removeFile(index)}
-                      className="press flex size-8 items-center justify-center rounded-[9px] border-2 border-ink text-ink"
+                      className="press flex size-8 items-center justify-center rounded-[9px] border-2 border-ink text-ink disabled:opacity-30"
                     >
                       <HugeiconsIcon icon={Cancel01Icon} className="size-4" strokeWidth={2.4} />
                     </button>
@@ -188,8 +195,9 @@ function MergePage() {
 
               <button
                 type="button"
+                disabled={status === "loading"}
                 onClick={() => inputRef.current?.click()}
-                className="flex items-center justify-center gap-2 rounded-[14px] border-2 border-dashed border-[#c9b89c] py-3 text-[13px] font-extrabold uppercase tracking-wide text-muted-ink transition-colors hover:border-ink hover:text-ink"
+                className="flex items-center justify-center gap-2 rounded-[14px] border-2 border-dashed border-[#c9b89c] py-3 text-[13px] font-extrabold uppercase tracking-wide text-muted-ink transition-colors hover:border-ink hover:text-ink disabled:opacity-30"
               >
                 <HugeiconsIcon icon={Add01Icon} className="size-4" strokeWidth={2.4} />
                 Add more files

@@ -21,7 +21,7 @@ class MergeError(RuntimeError):
 def merge_pdf_files(input_paths: list[Path], names: list[str], output_path: Path) -> None:
     """Concatenate the inputs, in order, into a single PDF at `output_path`."""
     with pikepdf.new() as merged, ExitStack() as sources:
-        for input_path, name in zip(input_paths, names):
+        for input_path, name in zip(input_paths, names, strict=True):
             try:
                 source = sources.enter_context(pikepdf.open(input_path))
             except pikepdf.PasswordError as exc:
