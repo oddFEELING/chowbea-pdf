@@ -1,37 +1,19 @@
-"""Routes for PDF actions. The first action is compression."""
+"""Routes for PDF actions. Submissions are queued, not processed inline."""
 
 from __future__ import annotations
 
 import shutil
 import tempfile
-import zipfile
 from pathlib import Path
-from typing import List
+from typing import Any, List
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
-from fastapi.responses import FileResponse
-from starlette.background import BackgroundTask
+from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
 
 from app.core.config import settings
-from app.services.compress import (
-    CompressionError,
-    CompressionQuality,
-    CompressionStats,
-    GhostscriptNotInstalledError,
-    compress_pdf_file,
-)
-from app.services.lock import (
-    AlreadyProtectedError,
-    EncryptionLevel,
-    LockError,
-    lock_pdf_file,
-)
-from app.services.unlock import (
-    IncorrectPasswordError,
-    NotEncryptedError,
-    UnlockError,
-    unlock_pdf_file,
-)
+from app.jobs.queue import QueueUnavailableError
+from app.jobs.schemas import JobAccepted
+from app.services.compress import CompressionQuality
+from app.services.lock import EncryptionLevel
 
 router = APIRouter(prefix="/pdf", tags=["pdf"])
 
@@ -80,148 +62,120 @@ def _safe_name(filename: str | None, fallback: str) -> str:
     return name or fallback
 
 
+async def _accept_job(
+    request: Request,
+    *,
+    tool: str,
+    workspace: Path,
+    file_count: int,
+    total_bytes: int,
+    params: dict[str, Any],
+) -> JobAccepted:
+    """Register the job and publish it; 503 (with cleanup) if the broker is down."""
+    registry = request.app.state.registry
+    job_queue = request.app.state.job_queue
+    record = registry.create(
+        tool=tool,
+        workspace=workspace,
+        file_count=file_count,
+        total_bytes=total_bytes,
+        params=params,
+    )
+    try:
+        await job_queue.publish(record.id)
+    except QueueUnavailableError as exc:
+        registry.discard(record.id)
+        raise HTTPException(
+            status_code=503,
+            detail="The processing queue is unavailable right now. Please try again shortly.",
+        ) from exc
+    return JobAccepted(
+        job_id=record.id,
+        position=registry.position(record.id),
+        queue_size=registry.queue_size(),
+    )
+
+
 @router.post(
     "/compress",
-    summary="Compress one or more PDF files",
-    response_class=FileResponse,
+    status_code=202,
+    summary="Queue one or more PDF files for compression",
+    response_model=JobAccepted,
 )
 async def compress(
+    request: Request,
     files: List[UploadFile] = File(..., description="One or more PDF files to compress."),
     quality: CompressionQuality = Form(
         CompressionQuality.ebook,
         description="Compression preset; 'screen' is smallest, 'prepress' is highest quality.",
     ),
-) -> FileResponse:
-    """Compress the uploaded PDFs and stream back the result.
-
-    A single file is returned as a PDF; multiple files are returned as a ZIP archive.
-    Aggregate size stats are exposed via response headers so the UI can show savings.
-    Uploads and the response are streamed via a temp directory that is cleaned up
-    once the response has been sent.
-    """
+) -> JobAccepted:
+    """Validate and store the uploads, then queue a compression job."""
     if not files:
         raise HTTPException(status_code=400, detail="No files were uploaded.")
 
-    # A working directory for this request; removed after the response is sent.
     work_dir = Path(tempfile.mkdtemp(prefix="chowbea-compress-"))
-    cleanup = BackgroundTask(shutil.rmtree, work_dir, ignore_errors=True)
-
     try:
-        outputs: List[tuple[Path, str]] = []
-        total_original = 0
-        total_compressed = 0
-
+        names: list[str] = []
+        total_bytes = 0
         for index, file in enumerate(files):
-            name = _safe_name(file.filename, f"document-{index + 1}.pdf")
             input_path = work_dir / f"input-{index}.pdf"
-            output_path = work_dir / f"output-{index}.pdf"
-
             await _stream_upload_to_disk(file, input_path)
-            stats: CompressionStats = compress_pdf_file(input_path, output_path, quality)
-
-            total_original += stats.original_size
-            total_compressed += stats.compressed_size
-            outputs.append((output_path, name))
-
-        headers = {
-            "X-Original-Size": str(total_original),
-            "X-Compressed-Size": str(total_compressed),
-        }
-
-        if len(outputs) == 1:
-            output_path, name = outputs[0]
-            return FileResponse(
-                output_path,
-                media_type="application/pdf",
-                filename=name,
-                headers=headers,
-                background=cleanup,
-            )
-
-        # Bundle multiple compressed PDFs into a single ZIP archive on disk.
-        archive_path = work_dir / "compressed-pdfs.zip"
-        with zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED) as archive:
-            for output_path, name in outputs:
-                archive.write(output_path, arcname=name)
-
-        return FileResponse(
-            archive_path,
-            media_type="application/zip",
-            filename="compressed-pdfs.zip",
-            headers=headers,
-            background=cleanup,
-        )
-    except GhostscriptNotInstalledError as exc:
-        # The compression engine is unavailable on this host: surface as 503.
-        shutil.rmtree(work_dir, ignore_errors=True)
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
-    except CompressionError as exc:
-        shutil.rmtree(work_dir, ignore_errors=True)
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
+            names.append(_safe_name(file.filename, f"document-{index + 1}.pdf"))
+            total_bytes += input_path.stat().st_size
     except Exception:
-        # Any other failure (including the validation HTTPExceptions above) must
-        # still clean up the temp directory before propagating.
         shutil.rmtree(work_dir, ignore_errors=True)
         raise
+
+    return await _accept_job(
+        request,
+        tool="compress",
+        workspace=work_dir,
+        file_count=len(names),
+        total_bytes=total_bytes,
+        params={"quality": quality.value, "names": names},
+    )
 
 
 @router.post(
     "/unlock",
-    summary="Remove the password from a PDF file",
-    response_class=FileResponse,
+    status_code=202,
+    summary="Queue a password removal job for a PDF file",
+    response_model=JobAccepted,
 )
 async def unlock(
+    request: Request,
     file: UploadFile = File(..., description="A password-protected PDF to unlock."),
     password: str = Form(..., description="The password that opens the PDF."),
-) -> FileResponse:
-    """Decrypt a single uploaded PDF with the given password and stream it back.
-
-    Returns the same document with its encryption removed. The temp directory is
-    cleaned up once the response has been sent.
-    """
-    # A working directory for this request; removed after the response is sent.
+) -> JobAccepted:
+    """Validate and store the upload, then queue an unlock job."""
     work_dir = Path(tempfile.mkdtemp(prefix="chowbea-unlock-"))
-    cleanup = BackgroundTask(shutil.rmtree, work_dir, ignore_errors=True)
-
     try:
-        name = _safe_name(file.filename, "document.pdf")
         input_path = work_dir / "input.pdf"
-        output_path = work_dir / "output.pdf"
-
         await _stream_upload_to_disk(file, input_path)
-        unlock_pdf_file(input_path, output_path, password)
-
-        # Prefix the original name so the download is recognisably "unlocked".
-        download_name = name if name.startswith("unlocked-") else f"unlocked-{name}"
-
-        return FileResponse(
-            output_path,
-            media_type="application/pdf",
-            filename=download_name,
-            background=cleanup,
-        )
-    except NotEncryptedError as exc:
-        shutil.rmtree(work_dir, ignore_errors=True)
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-    except IncorrectPasswordError as exc:
-        # 401-style situation, but the upload itself was fine; use 422 for a
-        # consistent "we couldn't process this" contract with the UI.
-        shutil.rmtree(work_dir, ignore_errors=True)
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-    except UnlockError as exc:
-        shutil.rmtree(work_dir, ignore_errors=True)
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
+        total_bytes = input_path.stat().st_size
     except Exception:
         shutil.rmtree(work_dir, ignore_errors=True)
         raise
 
+    return await _accept_job(
+        request,
+        tool="unlock",
+        workspace=work_dir,
+        file_count=1,
+        total_bytes=total_bytes,
+        params={"password": password, "name": _safe_name(file.filename, "document.pdf")},
+    )
+
 
 @router.post(
     "/lock",
-    summary="Add a password to a PDF file",
-    response_class=FileResponse,
+    status_code=202,
+    summary="Queue a password protection job for a PDF file",
+    response_model=JobAccepted,
 )
 async def lock(
+    request: Request,
     file: UploadFile = File(..., description="A PDF to password-protect."),
     password: str = Form(..., description="The password that will be required to open the PDF."),
     allow_printing: bool = Form(True, description="Permit printing the locked PDF."),
@@ -231,50 +185,32 @@ async def lock(
         EncryptionLevel.aes256,
         description="Encryption strength; 'aes-256' is strongest.",
     ),
-) -> FileResponse:
-    """Encrypt a single uploaded PDF with the given password and stream it back.
-
-    Returns the same document protected by a user (open) password. The temp
-    directory is cleaned up once the response has been sent.
-    """
+) -> JobAccepted:
+    """Validate and store the upload, then queue a lock job."""
     if not password:
         raise HTTPException(status_code=400, detail="A password is required to lock the PDF.")
 
-    # A working directory for this request; removed after the response is sent.
     work_dir = Path(tempfile.mkdtemp(prefix="chowbea-lock-"))
-    cleanup = BackgroundTask(shutil.rmtree, work_dir, ignore_errors=True)
-
     try:
-        name = _safe_name(file.filename, "document.pdf")
         input_path = work_dir / "input.pdf"
-        output_path = work_dir / "output.pdf"
-
         await _stream_upload_to_disk(file, input_path)
-        lock_pdf_file(
-            input_path,
-            output_path,
-            password,
-            allow_printing=allow_printing,
-            allow_copying=allow_copying,
-            allow_editing=allow_editing,
-            encryption=encryption,
-        )
-
-        # Prefix the original name so the download is recognisably "locked".
-        download_name = name if name.startswith("locked-") else f"locked-{name}"
-
-        return FileResponse(
-            output_path,
-            media_type="application/pdf",
-            filename=download_name,
-            background=cleanup,
-        )
-    except AlreadyProtectedError as exc:
-        shutil.rmtree(work_dir, ignore_errors=True)
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-    except LockError as exc:
-        shutil.rmtree(work_dir, ignore_errors=True)
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
+        total_bytes = input_path.stat().st_size
     except Exception:
         shutil.rmtree(work_dir, ignore_errors=True)
         raise
+
+    return await _accept_job(
+        request,
+        tool="lock",
+        workspace=work_dir,
+        file_count=1,
+        total_bytes=total_bytes,
+        params={
+            "password": password,
+            "allow_printing": allow_printing,
+            "allow_copying": allow_copying,
+            "allow_editing": allow_editing,
+            "encryption": encryption.value,
+            "name": _safe_name(file.filename, "document.pdf"),
+        },
+    )
