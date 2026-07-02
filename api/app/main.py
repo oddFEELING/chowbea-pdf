@@ -1,14 +1,66 @@
 """FastAPI application entrypoint for the Chowbea PDF API."""
 
+import asyncio
+import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
+from app.jobs.queue import JobQueue
+from app.jobs.registry import JobRegistry
+from app.jobs.worker import execute_job
 from app.routers import jobs, pdf
+
+logger = logging.getLogger(__name__)
+
+
+async def _run_queue(job_queue: JobQueue, registry: JobRegistry) -> None:
+    """Connect and start consuming, retrying forever so the API can come up
+    (and serve 503s on submit) while the broker is unreachable."""
+
+    async def handle(job_id: str) -> None:
+        await execute_job(registry, job_id)
+
+    while True:
+        try:
+            await job_queue.connect()
+            await job_queue.start_consumer(handle)
+            logger.info("Consuming pdf-jobs with prefetch=%d", settings.job_concurrency)
+            return
+        except Exception:
+            logger.exception("RabbitMQ unavailable; retrying in 5s")
+            await asyncio.sleep(5)
+
+
+async def _sweep_forever(registry: JobRegistry) -> None:
+    while True:
+        await asyncio.sleep(60)
+        removed = registry.sweep()
+        if removed:
+            logger.info("Swept %d expired job(s)", removed)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    registry = JobRegistry(result_ttl_seconds=settings.result_ttl_minutes * 60)
+    job_queue = JobQueue(settings.rabbitmq_url, prefetch=settings.job_concurrency)
+    app.state.registry = registry
+    app.state.job_queue = job_queue
+    queue_task = asyncio.create_task(_run_queue(job_queue, registry))
+    sweep_task = asyncio.create_task(_sweep_forever(registry))
+    try:
+        yield
+    finally:
+        queue_task.cancel()
+        sweep_task.cancel()
+        await job_queue.close()
+
 
 # The OpenAPI document produced here is consumed by the web app's `chowbea-axios`
 # codegen to generate a fully typed client.
-app = FastAPI(title=settings.app_name, version=settings.app_version)
+app = FastAPI(title=settings.app_name, version=settings.app_version, lifespan=lifespan)
 
 # Allow the browser-based frontend to call the API during development and in prod.
 app.add_middleware(
