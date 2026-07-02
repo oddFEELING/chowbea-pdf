@@ -65,3 +65,14 @@ def test_sweep_removes_only_expired_finished_jobs(tmp_path):
     assert not old.workspace.exists()
     assert registry.get(fresh.id) is not None
     assert registry.get(queued.id) is not None
+
+
+def test_record_repr_hides_params(tmp_path):
+    registry = JobRegistry()
+    workspace = tmp_path / "a"
+    workspace.mkdir()
+    record = registry.create(
+        tool="lock", workspace=workspace, file_count=1, total_bytes=1,
+        params={"password": "hunter2"},
+    )
+    assert "hunter2" not in repr(record)

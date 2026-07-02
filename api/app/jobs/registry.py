@@ -37,7 +37,7 @@ class JobRecord:
     workspace: Path
     file_count: int
     total_bytes: int
-    params: dict[str, Any] = field(default_factory=dict)
+    params: dict[str, Any] = field(default_factory=dict, repr=False)
     status: JobStatus = JobStatus.queued
     error: str | None = None
     result_path: Path | None = None
