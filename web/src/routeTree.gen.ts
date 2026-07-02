@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnlockRouteImport } from './routes/unlock'
+import { Route as QueueRouteImport } from './routes/queue'
 import { Route as LockRouteImport } from './routes/lock'
 import { Route as CompressRouteImport } from './routes/compress'
 import { Route as IndexRouteImport } from './routes/index'
@@ -17,6 +18,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const UnlockRoute = UnlockRouteImport.update({
   id: '/unlock',
   path: '/unlock',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QueueRoute = QueueRouteImport.update({
+  id: '/queue',
+  path: '/queue',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LockRoute = LockRouteImport.update({
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/compress': typeof CompressRoute
   '/lock': typeof LockRoute
+  '/queue': typeof QueueRoute
   '/unlock': typeof UnlockRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/compress': typeof CompressRoute
   '/lock': typeof LockRoute
+  '/queue': typeof QueueRoute
   '/unlock': typeof UnlockRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/compress': typeof CompressRoute
   '/lock': typeof LockRoute
+  '/queue': typeof QueueRoute
   '/unlock': typeof UnlockRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/compress' | '/lock' | '/unlock'
+  fullPaths: '/' | '/compress' | '/lock' | '/queue' | '/unlock'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/compress' | '/lock' | '/unlock'
-  id: '__root__' | '/' | '/compress' | '/lock' | '/unlock'
+  to: '/' | '/compress' | '/lock' | '/queue' | '/unlock'
+  id: '__root__' | '/' | '/compress' | '/lock' | '/queue' | '/unlock'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CompressRoute: typeof CompressRoute
   LockRoute: typeof LockRoute
+  QueueRoute: typeof QueueRoute
   UnlockRoute: typeof UnlockRoute
 }
 
@@ -76,6 +86,13 @@ declare module '@tanstack/react-router' {
       path: '/unlock'
       fullPath: '/unlock'
       preLoaderRoute: typeof UnlockRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/queue': {
+      id: '/queue'
+      path: '/queue'
+      fullPath: '/queue'
+      preLoaderRoute: typeof QueueRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lock': {
@@ -106,6 +123,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CompressRoute: CompressRoute,
   LockRoute: LockRoute,
+  QueueRoute: QueueRoute,
   UnlockRoute: UnlockRoute,
 }
 export const routeTree = rootRouteImport

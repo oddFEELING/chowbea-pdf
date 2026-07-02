@@ -7,7 +7,7 @@ import {
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { File01Icon, Login03Icon } from "@hugeicons/core-free-icons"
+import { File01Icon } from "@hugeicons/core-free-icons"
 
 import appCss from "../styles.css?url"
 
@@ -81,20 +81,15 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <div className="min-h-svh bg-cream">
           <div className="mx-auto flex min-h-svh w-full max-w-7xl flex-col px-5 py-7 sm:px-8 sm:py-9 lg:px-10">
-            {/* Top bar: wordmark left, sign-in pill right. */}
+            {/* Top bar: wordmark left, queue link right. */}
             <header className="flex items-center justify-between">
               <Wordmark />
-              <button
-                type="button"
+              <Link
+                to="/queue"
                 className="press inline-flex items-center gap-2 rounded-full border-2 border-ink bg-card px-5 py-2.5 text-sm font-extrabold tracking-wide text-ink uppercase shadow-block-sm"
               >
-                <HugeiconsIcon
-                  icon={Login03Icon}
-                  className="size-4"
-                  strokeWidth={2.2}
-                />
-                Sign in
-              </button>
+                Queue
+              </Link>
             </header>
 
             <main className="flex-1">{children}</main>

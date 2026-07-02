@@ -30,6 +30,7 @@ export const Route = createFileRoute("/compress")({ component: CompressPage })
 
 const PHASE_LABELS: Record<CompressionProgress["phase"], string> = {
   uploading: "Uploading",
+  queued: "In line",
   processing: "Compressing",
   downloading: "Downloading",
 }
@@ -246,7 +247,12 @@ function CompressPage() {
           {status === "loading" && progress && (
             <div className="mt-5 flex flex-col gap-2">
               <div className="flex items-center justify-between text-[13px] font-extrabold uppercase tracking-wide text-muted-ink">
-                <span>{PHASE_LABELS[progress.phase]}…</span>
+                <span>
+                  {progress.phase === "queued" && progress.position != null
+                    ? `In line — #${progress.position}`
+                    : PHASE_LABELS[progress.phase]}
+                  …
+                </span>
                 {progress.percent !== null && (
                   <span className="tabular-nums text-ink">{Math.round(progress.percent)}%</span>
                 )}
