@@ -51,6 +51,13 @@ class JobQueue:
         return self._queue is not None
 
     async def connect(self) -> None:
+        # Cancelling connect_robust while a connection attempt is in flight
+        # strands an internal reconnect loop that survives task cancellation
+        # and blocks event-loop shutdown (aio-pika 9.6). Probe with a plain,
+        # cancellable connection first so connect_robust only runs against a
+        # reachable broker.
+        probe = await aio_pika.connect(self._url)
+        await probe.close()
         self._connection = await aio_pika.connect_robust(self._url)
         self._channel = await self._connection.channel()
         # prefetch_count bounds unacked deliveries, which bounds concurrency:
