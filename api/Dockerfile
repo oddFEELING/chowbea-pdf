@@ -17,9 +17,10 @@ ENV UV_PYTHON_DOWNLOADS=0 \
     UV_LINK_MODE=copy
 
 # Install dependencies in their own cached layer, before app code, for fast rebuilds.
-RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+# Railway's builder requires cache mounts to carry an id of the form s/<service-id>-<path>
+# and supports no other mount types, so the lockfiles are COPYed rather than bind-mounted.
+COPY pyproject.toml uv.lock ./
+RUN --mount=type=cache,id=s/a538c712-47e4-4697-9941-e7efa7952728-/root/.cache/uv,target=/root/.cache/uv \
     uv sync --locked
 
 COPY app ./app
