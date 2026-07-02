@@ -36,7 +36,7 @@ const TOOLS: Tool[] = [
   { name: "Lock", description: "Add a password", icon: SquareLock01Icon, to: "/lock" },
   { name: "Compress", description: "Shrink file size", icon: Minimize01Icon, to: "/compress" },
   { name: "OCR", description: "Make text searchable", icon: FileScanIcon },
-  { name: "Merge", description: "Combine PDFs", icon: Layers01Icon },
+  { name: "Merge", description: "Combine PDFs", icon: Layers01Icon, to: "/merge" },
   { name: "Split", description: "Separate pages", icon: Files01Icon },
   { name: "Convert", description: "To & from Word, images", icon: ArrowDataTransferHorizontalIcon },
   { name: "Rotate", description: "Rotate & reorder pages", icon: RotateClockwiseIcon },

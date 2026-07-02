@@ -53,6 +53,14 @@ export interface Body_lock_pdf_lock_post {
 }
 
 /**
+ * Schema: Body_merge_pdf_merge_post
+ */
+export interface Body_merge_pdf_merge_post {
+	/** Two or more PDF files, in merge order. */
+	files: (File | Blob)[];
+}
+
+/**
  * Schema: Body_unlock_pdf_unlock_post
  */
 export interface Body_unlock_pdf_unlock_post {
@@ -208,6 +216,25 @@ export type Lock_pdf_lock_postResponse422 = {
 /** Response: POST /pdf/lock (happy path) */
 export type Lock_pdf_lock_postResponse = Lock_pdf_lock_postResponse202;
 
+/** Response: POST /pdf/merge (202 - Successful Response) */
+export type Merge_pdf_merge_postResponse202 = {
+	job_id: string;
+	position: number | null;
+	queue_size: number;
+};
+
+/** Response: POST /pdf/merge (422 - Validation Error) */
+export type Merge_pdf_merge_postResponse422 = {
+	detail?: ({
+		loc: (string | number)[];
+		msg: string;
+		type: string;
+	})[];
+};
+
+/** Response: POST /pdf/merge (happy path) */
+export type Merge_pdf_merge_postResponse = Merge_pdf_merge_postResponse202;
+
 /** Response: GET /jobs/{job_id} (200 - Successful Response) */
 export type Job_status_jobs__job_id__getResponse200 = {
 	id: string;
@@ -310,6 +337,12 @@ export type Lock_pdf_lock_postBody = {
 	allow_editing?: boolean;
 	 /** Encryption strength; 'aes-256' is strongest. */
 	encryption?: "aes-128" | "aes-256";
+};
+
+/** Request body: POST /pdf/merge */
+export type Merge_pdf_merge_postBody = {
+	 /** Two or more PDF files, in merge order. */
+	files: (File | Blob)[];
 };
 
 /* ~ =================================== ~ */

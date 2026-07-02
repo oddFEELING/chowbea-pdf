@@ -131,6 +131,48 @@
         }
       }
     },
+    "/pdf/merge": {
+      "post": {
+        "tags": [
+          "pdf"
+        ],
+        "summary": "Queue a merge of two or more PDF files",
+        "description": "Validate and store the uploads, then queue a merge job.",
+        "operationId": "merge_pdf_merge_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_merge_pdf_merge_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobAccepted"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/jobs/{job_id}": {
       "get": {
         "tags": [
@@ -240,7 +282,7 @@
           "meta"
         ],
         "summary": "Liveness check",
-        "description": "Return a simple status payload used by load balancers and uptime checks.",
+        "description": "Return a status payload used by load balancers, uptime checks, and\nbug reports (the commit identifies the running deploy).",
         "operationId": "health_health_get",
         "responses": {
           "200": {
@@ -363,6 +405,24 @@
           "password"
         ],
         "title": "Body_lock_pdf_lock_post"
+      },
+      "Body_merge_pdf_merge_post": {
+        "properties": {
+          "files": {
+            "items": {
+              "type": "string",
+              "format": "binary"
+            },
+            "type": "array",
+            "title": "Files",
+            "description": "Two or more PDF files, in merge order."
+          }
+        },
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "title": "Body_merge_pdf_merge_post"
       },
       "Body_unlock_pdf_unlock_post": {
         "properties": {

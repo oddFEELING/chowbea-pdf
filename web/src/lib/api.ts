@@ -81,6 +81,38 @@ export async function compressPdfs(
   }
 }
 
+/** Result of a successful merge request. */
+export interface MergeResult {
+  /** The combined PDF. */
+  blob: Blob
+  /** Suggested download filename parsed from the response. */
+  filename: string
+}
+
+/**
+ * Merge two or more PDFs, in array order, into a single file.
+ *
+ * @throws Error with the API's error detail (e.g. a locked input) on failure.
+ */
+export async function mergePdfs(
+  files: File[],
+  onProgress?: (progress: CompressionProgress) => void,
+): Promise<MergeResult> {
+  const form = new FormData()
+  for (const file of files) {
+    form.append("files", file)
+  }
+  const download = await runJobFlow({
+    tool: "merge",
+    submit: () => submitForm("/pdf/merge", form, onProgress),
+    onProgress,
+  })
+  return {
+    blob: download.blob,
+    filename: download.filename ?? "merged.pdf",
+  }
+}
+
 /** Result of a successful unlock request. */
 export interface UnlockResult {
   /** The unlocked PDF. */

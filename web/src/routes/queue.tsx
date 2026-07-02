@@ -14,6 +14,7 @@ const TOOL_LABELS: Record<string, string> = {
   compress: "Compress",
   lock: "Lock",
   unlock: "Unlock",
+  merge: "Merge",
 }
 
 function BoardRow({

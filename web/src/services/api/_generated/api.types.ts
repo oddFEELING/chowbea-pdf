@@ -59,6 +59,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/pdf/merge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Queue a merge of two or more PDF files
+         * @description Validate and store the uploads, then queue a merge job.
+         */
+        post: operations["merge_pdf_merge_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/jobs/{job_id}": {
         parameters: {
             query?: never;
@@ -119,7 +139,8 @@ export interface paths {
         };
         /**
          * Liveness check
-         * @description Return a simple status payload used by load balancers and uptime checks.
+         * @description Return a status payload used by load balancers, uptime checks, and
+         *     bug reports (the commit identifies the running deploy).
          */
         get: operations["health_health_get"];
         put?: never;
@@ -199,6 +220,14 @@ export interface components {
              * @default aes-256
              */
             encryption: components["schemas"]["EncryptionLevel"];
+        };
+        /** Body_merge_pdf_merge_post */
+        Body_merge_pdf_merge_post: {
+            /**
+             * Files
+             * @description Two or more PDF files, in merge order.
+             */
+            files: string[];
         };
         /** Body_unlock_pdf_unlock_post */
         Body_unlock_pdf_unlock_post: {
@@ -371,6 +400,39 @@ export interface operations {
         requestBody: {
             content: {
                 "multipart/form-data": components["schemas"]["Body_lock_pdf_lock_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobAccepted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    merge_pdf_merge_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_merge_pdf_merge_post"];
             };
         };
         responses: {
