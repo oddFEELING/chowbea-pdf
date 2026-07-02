@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.routers import pdf
+from app.routers import jobs, pdf
 
 # The OpenAPI document produced here is consumed by the web app's `chowbea-axios`
 # codegen to generate a fully typed client.
@@ -21,6 +21,7 @@ app.add_middleware(
 )
 
 app.include_router(pdf.router)
+app.include_router(jobs.router)
 
 
 @app.get("/health", tags=["meta"], summary="Liveness check")
