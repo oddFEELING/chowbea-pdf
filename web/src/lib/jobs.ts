@@ -89,8 +89,19 @@ export async function waitForJob(
   } = {},
 ): Promise<JobStatusResponse> {
   const { getStatus = fetchJobStatus, delayMs = 2000, onProgress } = opts
+  let consecutiveFailures = 0
   for (;;) {
-    const current = await getStatus(jobId)
+    let current: JobStatusResponse
+    try {
+      current = await getStatus(jobId)
+      consecutiveFailures = 0
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response && err.response.status < 500) throw err
+      consecutiveFailures += 1
+      if (consecutiveFailures >= 3) throw err
+      await sleep(delayMs)
+      continue
+    }
     if (current.status === "done") return current
     if (current.status === "failed") {
       throw new Error(current.error ?? "The job failed.")

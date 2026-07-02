@@ -55,3 +55,19 @@ def test_queue_down_returns_503_and_cleans_up(client, registry, fake_queue, pdf_
     )
     assert response.status_code == 503
     assert registry.queue_size() == 0
+
+
+def test_unexpected_publish_error_returns_503_and_cleans_up(
+    client, registry, fake_queue, pdf_bytes
+):
+    async def _boom(job_id):
+        raise RuntimeError("boom")
+
+    fake_queue.publish = _boom
+    response = client.post(
+        "/pdf/unlock",
+        files={"file": ("a.pdf", pdf_bytes, "application/pdf")},
+        data={"password": "pw"},
+    )
+    assert response.status_code == 503
+    assert registry.queue_size() == 0

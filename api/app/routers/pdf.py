@@ -83,7 +83,7 @@ async def _accept_job(
     )
     try:
         await job_queue.publish(record.id)
-    except QueueUnavailableError as exc:
+    except Exception as exc:  # noqa: BLE001 - any publish failure must not leave a phantom queued job
         registry.discard(record.id)
         raise HTTPException(
             status_code=503,

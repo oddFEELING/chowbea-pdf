@@ -126,6 +126,10 @@ async def execute_job(registry: JobRegistry, job_id: str) -> None:
         logger.warning("Dropping job %s with no registry entry", job_id)
         return
 
+    if record.status is not JobStatus.queued:
+        logger.warning("Ignoring redelivery of job %s in state %s", job_id, record.status.value)
+        return
+
     record.status = JobStatus.processing
     record.started_at = time.time()
     try:

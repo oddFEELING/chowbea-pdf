@@ -46,4 +46,32 @@ describe("waitForJob", () => {
       }),
     ).rejects.toThrow("Wrong password.")
   })
+
+  it("tolerates transient poll failures and resolves once the job completes", async () => {
+    let calls = 0
+    const result = await waitForJob("job1", {
+      getStatus: async () => {
+        calls += 1
+        if (calls <= 2) throw new Error("network")
+        return status({ status: "done" })
+      },
+      delayMs: 0,
+    })
+    expect(result.status).toBe("done")
+    expect(calls).toBe(3)
+  })
+
+  it("rejects after 3 consecutive poll failures", async () => {
+    let calls = 0
+    await expect(
+      waitForJob("job1", {
+        getStatus: async () => {
+          calls += 1
+          throw new Error("network")
+        },
+        delayMs: 0,
+      }),
+    ).rejects.toThrow("network")
+    expect(calls).toBe(3)
+  })
 })

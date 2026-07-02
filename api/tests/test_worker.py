@@ -70,3 +70,28 @@ def test_unlock_job_with_wrong_password_fails_gracefully(tmp_path):
 def test_unknown_job_id_is_ignored():
     registry = JobRegistry()
     asyncio.run(execute_job(registry, "missing"))  # must not raise
+
+
+def test_redelivered_job_is_not_rerun(tmp_path):
+    registry = JobRegistry()
+    workspace = tmp_path / "job"
+    workspace.mkdir()
+    write_blank_pdf(workspace / "input.pdf")
+    record = registry.create(
+        tool="lock",
+        workspace=workspace,
+        file_count=1,
+        total_bytes=(workspace / "input.pdf").stat().st_size,
+        params={
+            "password": "secret",
+            "allow_printing": True,
+            "allow_copying": False,
+            "allow_editing": False,
+            "encryption": "aes-256",
+            "name": "report.pdf",
+        },
+    )
+    record.status = JobStatus.processing
+    asyncio.run(execute_job(registry, record.id))
+    assert record.status is JobStatus.processing
+    assert record.finished_at is None

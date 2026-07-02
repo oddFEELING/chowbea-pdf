@@ -20,7 +20,7 @@ def _get_record(request: Request, job_id: str) -> JobRecord:
 
 
 @router.get("/jobs/{job_id}", summary="Poll a job's status", response_model=JobStatusResponse)
-def job_status(request: Request, job_id: str) -> JobStatusResponse:
+async def job_status(request: Request, job_id: str) -> JobStatusResponse:
     registry = request.app.state.registry
     record = _get_record(request, job_id)
     return JobStatusResponse(
@@ -37,7 +37,7 @@ def job_status(request: Request, job_id: str) -> JobStatusResponse:
 
 
 @router.get("/jobs/{job_id}/download", summary="Download a finished job's result")
-def job_download(request: Request, job_id: str) -> FileResponse:
+async def job_download(request: Request, job_id: str) -> FileResponse:
     record = _get_record(request, job_id)
     if record.status is not JobStatus.done or record.result_path is None:
         raise HTTPException(
@@ -63,7 +63,7 @@ def _board_entry(record: JobRecord) -> BoardEntry:
 
 
 @router.get("/queue", summary="Public queue board", response_model=QueueBoard)
-def queue_board(request: Request) -> QueueBoard:
+async def queue_board(request: Request) -> QueueBoard:
     registry = request.app.state.registry
     return QueueBoard(
         concurrency=settings.job_concurrency,
