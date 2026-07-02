@@ -1,7 +1,7 @@
 # Convenience commands for running the Chowbea PDF monorepo.
 # `make dev` runs the API and web app together; Ctrl-C stops both.
 
-.PHONY: help dev api web install codegen
+.PHONY: help dev api web install codegen rabbit
 
 help:
 	@echo "Targets:"
@@ -10,6 +10,7 @@ help:
 	@echo "  make api       Run only the FastAPI backend (port 8000)"
 	@echo "  make web       Run only the web dev server (port 3000)"
 	@echo "  make codegen   Watch the API spec and regenerate the typed client"
+	@echo "  make rabbit    Start a local RabbitMQ container (needed by make dev)"
 
 install:
 	cd api && uv sync
@@ -30,3 +31,8 @@ web:
 
 codegen:
 	cd web && bun api:watch
+
+# Local broker for the job queue; management UI at http://localhost:15672 (guest/guest).
+rabbit:
+	@docker start chowbea-rabbit 2>/dev/null || docker run -d --name chowbea-rabbit \
+		-p 5672:5672 -p 15672:15672 rabbitmq:4-management
