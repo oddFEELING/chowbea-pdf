@@ -214,3 +214,40 @@ async def lock(
             "name": _safe_name(file.filename, "document.pdf"),
         },
     )
+
+
+@router.post(
+    "/merge",
+    status_code=202,
+    summary="Queue a merge of two or more PDF files",
+    response_model=JobAccepted,
+)
+async def merge(
+    request: Request,
+    files: List[UploadFile] = File(..., description="Two or more PDF files, in merge order."),
+) -> JobAccepted:
+    """Validate and store the uploads, then queue a merge job."""
+    if len(files) < 2:
+        raise HTTPException(status_code=400, detail="Merging needs at least two PDF files.")
+
+    work_dir = Path(tempfile.mkdtemp(prefix="chowbea-merge-"))
+    try:
+        names: list[str] = []
+        total_bytes = 0
+        for index, file in enumerate(files):
+            input_path = work_dir / f"input-{index}.pdf"
+            await _stream_upload_to_disk(file, input_path)
+            names.append(_safe_name(file.filename, f"document-{index + 1}.pdf"))
+            total_bytes += input_path.stat().st_size
+    except Exception:
+        shutil.rmtree(work_dir, ignore_errors=True)
+        raise
+
+    return await _accept_job(
+        request,
+        tool="merge",
+        workspace=work_dir,
+        file_count=len(names),
+        total_bytes=total_bytes,
+        params={"names": names},
+    )

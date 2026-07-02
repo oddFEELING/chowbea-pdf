@@ -71,3 +71,30 @@ def test_unexpected_publish_error_returns_503_and_cleans_up(
     )
     assert response.status_code == 503
     assert registry.queue_size() == 0
+
+
+def test_merge_returns_202_with_ordered_names(client, registry, fake_queue, pdf_bytes):
+    response = client.post(
+        "/pdf/merge",
+        files=[
+            ("files", ("b.pdf", pdf_bytes, "application/pdf")),
+            ("files", ("a.pdf", pdf_bytes, "application/pdf")),
+        ],
+    )
+    assert response.status_code == 202
+    body = response.json()
+    record = registry.get(body["job_id"])
+    assert record.tool == "merge"
+    assert record.params["names"] == ["b.pdf", "a.pdf"]
+    assert (record.workspace / "input-0.pdf").exists()
+    assert (record.workspace / "input-1.pdf").exists()
+    assert fake_queue.published == [body["job_id"]]
+
+
+def test_merge_requires_two_files(client, pdf_bytes):
+    response = client.post(
+        "/pdf/merge",
+        files=[("files", ("a.pdf", pdf_bytes, "application/pdf"))],
+    )
+    assert response.status_code == 400
+    assert "at least two" in response.json()["detail"]
