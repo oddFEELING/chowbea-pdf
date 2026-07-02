@@ -13,6 +13,18 @@
 /* ~ =================================== ~ */
 
 /**
+  * Anonymized public view of one job. Never includes filenames.
+ * Schema: BoardEntry
+ */
+export interface BoardEntry {
+	id_prefix: string;
+	tool: string;
+	file_count: number;
+	total_bytes: number;
+	created_at: number;
+}
+
+/**
  * Schema: Body_compress_pdf_compress_post
  */
 export interface Body_compress_pdf_compress_post {
@@ -20,6 +32,34 @@ export interface Body_compress_pdf_compress_post {
 	files: (File | Blob)[];
 	/** Compression preset; 'screen' is smallest, 'prepress' is highest quality. */
 	quality?: "screen" | "ebook" | "printer" | "prepress";
+}
+
+/**
+ * Schema: Body_lock_pdf_lock_post
+ */
+export interface Body_lock_pdf_lock_post {
+	/** A PDF to password-protect. */
+	file: File | Blob;
+	/** The password that will be required to open the PDF. */
+	password: string;
+	/** Permit printing the locked PDF. */
+	allow_printing?: boolean;
+	/** Permit copying/extracting text from the PDF. */
+	allow_copying?: boolean;
+	/** Permit editing and annotating the PDF. */
+	allow_editing?: boolean;
+	/** Encryption strength; 'aes-256' is strongest. */
+	encryption?: "aes-128" | "aes-256";
+}
+
+/**
+ * Schema: Body_unlock_pdf_unlock_post
+ */
+export interface Body_unlock_pdf_unlock_post {
+	/** A password-protected PDF to unlock. */
+	file: File | Blob;
+	/** The password that opens the PDF. */
+	password: string;
 }
 
 /**
@@ -32,6 +72,12 @@ Lower quality means smaller files: `screen` is the most aggressive,
 export type CompressionQuality = "screen" | "ebook" | "printer" | "prepress";
 
 /**
+  * Encryption strength presets exposed by the API.
+ * Schema: EncryptionLevel
+ */
+export type EncryptionLevel = "aes-128" | "aes-256";
+
+/**
  * Schema: HTTPValidationError
  */
 export interface HTTPValidationError {
@@ -40,6 +86,56 @@ export interface HTTPValidationError {
 		msg: string;
 		type: string;
 	})[];
+}
+
+/**
+ * Schema: JobAccepted
+ */
+export interface JobAccepted {
+	job_id: string;
+	position: number | null;
+	queue_size: number;
+}
+
+/**
+ * Schema: JobStatus
+ */
+export type JobStatus = "queued" | "processing" | "done" | "failed";
+
+/**
+ * Schema: JobStatusResponse
+ */
+export interface JobStatusResponse {
+	id: string;
+	tool: string;
+	status: "queued" | "processing" | "done" | "failed";
+	position: number | null;
+	queue_size: number;
+	error: string | null;
+	file_count: number;
+	total_bytes: number;
+	created_at: number;
+}
+
+/**
+ * Schema: QueueBoard
+ */
+export interface QueueBoard {
+	concurrency: number;
+	processing: {
+		id_prefix: string;
+		tool: string;
+		file_count: number;
+		total_bytes: number;
+		created_at: number;
+	}[];
+	waiting: {
+		id_prefix: string;
+		tool: string;
+		file_count: number;
+		total_bytes: number;
+		created_at: number;
+	}[];
 }
 
 /**
@@ -55,6 +151,13 @@ export interface ValidationError {
 /* -- Operation Responses -- */
 /* ~ =================================== ~ */
 
+/** Response: POST /pdf/compress (202 - Successful Response) */
+export type Compress_pdf_compress_postResponse202 = {
+	job_id: string;
+	position: number | null;
+	queue_size: number;
+};
+
 /** Response: POST /pdf/compress (422 - Validation Error) */
 export type Compress_pdf_compress_postResponse422 = {
 	detail?: ({
@@ -63,6 +166,109 @@ export type Compress_pdf_compress_postResponse422 = {
 		type: string;
 	})[];
 };
+
+/** Response: POST /pdf/compress (happy path) */
+export type Compress_pdf_compress_postResponse = Compress_pdf_compress_postResponse202;
+
+/** Response: POST /pdf/unlock (202 - Successful Response) */
+export type Unlock_pdf_unlock_postResponse202 = {
+	job_id: string;
+	position: number | null;
+	queue_size: number;
+};
+
+/** Response: POST /pdf/unlock (422 - Validation Error) */
+export type Unlock_pdf_unlock_postResponse422 = {
+	detail?: ({
+		loc: (string | number)[];
+		msg: string;
+		type: string;
+	})[];
+};
+
+/** Response: POST /pdf/unlock (happy path) */
+export type Unlock_pdf_unlock_postResponse = Unlock_pdf_unlock_postResponse202;
+
+/** Response: POST /pdf/lock (202 - Successful Response) */
+export type Lock_pdf_lock_postResponse202 = {
+	job_id: string;
+	position: number | null;
+	queue_size: number;
+};
+
+/** Response: POST /pdf/lock (422 - Validation Error) */
+export type Lock_pdf_lock_postResponse422 = {
+	detail?: ({
+		loc: (string | number)[];
+		msg: string;
+		type: string;
+	})[];
+};
+
+/** Response: POST /pdf/lock (happy path) */
+export type Lock_pdf_lock_postResponse = Lock_pdf_lock_postResponse202;
+
+/** Response: GET /jobs/{job_id} (200 - Successful Response) */
+export type Job_status_jobs__job_id__getResponse200 = {
+	id: string;
+	tool: string;
+	status: "queued" | "processing" | "done" | "failed";
+	position: number | null;
+	queue_size: number;
+	error: string | null;
+	file_count: number;
+	total_bytes: number;
+	created_at: number;
+};
+
+/** Response: GET /jobs/{job_id} (422 - Validation Error) */
+export type Job_status_jobs__job_id__getResponse422 = {
+	detail?: ({
+		loc: (string | number)[];
+		msg: string;
+		type: string;
+	})[];
+};
+
+/** Response: GET /jobs/{job_id} (happy path) */
+export type Job_status_jobs__job_id__getResponse = Job_status_jobs__job_id__getResponse200;
+
+/** Response: GET /jobs/{job_id}/download (200 - Successful Response) */
+export type Job_download_jobs__job_id__download_getResponse200 = unknown;
+
+/** Response: GET /jobs/{job_id}/download (422 - Validation Error) */
+export type Job_download_jobs__job_id__download_getResponse422 = {
+	detail?: ({
+		loc: (string | number)[];
+		msg: string;
+		type: string;
+	})[];
+};
+
+/** Response: GET /jobs/{job_id}/download (happy path) */
+export type Job_download_jobs__job_id__download_getResponse = Job_download_jobs__job_id__download_getResponse200;
+
+/** Response: GET /queue (200 - Successful Response) */
+export type Queue_board_queue_getResponse200 = {
+	concurrency: number;
+	processing: {
+		id_prefix: string;
+		tool: string;
+		file_count: number;
+		total_bytes: number;
+		created_at: number;
+	}[];
+	waiting: {
+		id_prefix: string;
+		tool: string;
+		file_count: number;
+		total_bytes: number;
+		created_at: number;
+	}[];
+};
+
+/** Response: GET /queue (happy path) */
+export type Queue_board_queue_getResponse = Queue_board_queue_getResponse200;
 
 /** Response: GET /health (200 - Successful Response) */
 export type Health_health_getResponse200 = Record<string, string>;
@@ -80,4 +286,42 @@ export type Compress_pdf_compress_postBody = {
 	files: (File | Blob)[];
 	 /** Compression preset; 'screen' is smallest, 'prepress' is highest quality. */
 	quality?: "screen" | "ebook" | "printer" | "prepress";
+};
+
+/** Request body: POST /pdf/unlock */
+export type Unlock_pdf_unlock_postBody = {
+	 /** A password-protected PDF to unlock. */
+	file: File | Blob;
+	 /** The password that opens the PDF. */
+	password: string;
+};
+
+/** Request body: POST /pdf/lock */
+export type Lock_pdf_lock_postBody = {
+	 /** A PDF to password-protect. */
+	file: File | Blob;
+	 /** The password that will be required to open the PDF. */
+	password: string;
+	 /** Permit printing the locked PDF. */
+	allow_printing?: boolean;
+	 /** Permit copying/extracting text from the PDF. */
+	allow_copying?: boolean;
+	 /** Permit editing and annotating the PDF. */
+	allow_editing?: boolean;
+	 /** Encryption strength; 'aes-256' is strongest. */
+	encryption?: "aes-128" | "aes-256";
+};
+
+/* ~ =================================== ~ */
+/* -- Operation Path Parameters -- */
+/* ~ =================================== ~ */
+
+/** Path params: GET /jobs/{job_id} */
+export type Job_status_jobs__job_id__getPathParams = {
+	job_id: string;
+};
+
+/** Path params: GET /jobs/{job_id}/download */
+export type Job_download_jobs__job_id__download_getPathParams = {
+	job_id: string;
 };
