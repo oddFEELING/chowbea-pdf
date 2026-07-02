@@ -59,7 +59,10 @@ async def lifespan(app: FastAPI):
     finally:
         queue_task.cancel()
         sweep_task.cancel()
-        await asyncio.gather(queue_task, sweep_task, return_exceptions=True)
+        # aio-pika's connect_robust can swallow cancellation while an initial
+        # connect attempt is failing, so bound the wait — a task that will not
+        # stop is abandoned after 5s rather than hanging shutdown forever.
+        await asyncio.wait({queue_task, sweep_task}, timeout=5)
         await job_queue.close()
 
 
