@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { useCompressStore } from "./compress"
+import { useConvertStore } from "./convert"
 import { useRotateStore } from "./rotate"
 
 describe("tool stores", () => {
@@ -40,5 +41,11 @@ describe("tool stores", () => {
     expect(useRotateStore.getState().cards[0].rotation).toBe(90)
     useRotateStore.getState().reset()
     expect(useRotateStore.getState().cards).toEqual([])
+  })
+
+  it("convert store resets target and dpi", () => {
+    useConvertStore.setState({ target: "docx", dpi: 300, status: "loading" })
+    useConvertStore.getState().reset()
+    expect(useConvertStore.getState()).toMatchObject({ target: null, dpi: 150, status: "idle" })
   })
 })
