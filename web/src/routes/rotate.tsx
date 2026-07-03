@@ -322,8 +322,9 @@ function RotatePage() {
               <button
                 type="button"
                 aria-label="Remove file"
+                disabled={loading}
                 onClick={clearFile}
-                className="press flex size-8 shrink-0 items-center justify-center rounded-[9px] border-2 border-ink text-ink"
+                className="press flex size-8 shrink-0 items-center justify-center rounded-[9px] border-2 border-ink text-ink disabled:opacity-30"
               >
                 <HugeiconsIcon icon={Cancel01Icon} className="size-4" strokeWidth={2.4} />
               </button>

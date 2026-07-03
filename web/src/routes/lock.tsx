@@ -143,7 +143,7 @@ function LockPage() {
     })
     try {
       const current = useLockStore.getState()
-      if (!current.file) return
+      if (!current.file) throw new Error("No file selected.")
       const locked = await lockPdf(
         current.file,
         { password: current.password, encryption: current.encryption, ...current.permissions },
@@ -201,6 +201,7 @@ function LockPage() {
             name={file.name}
             meta={formatBytes(file.size)}
             onReplace={reset}
+            disabled={status === "loading"}
           />
         )}
 

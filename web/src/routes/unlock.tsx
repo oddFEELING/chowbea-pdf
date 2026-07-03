@@ -57,7 +57,7 @@ function UnlockPage() {
     })
     try {
       const current = useUnlockStore.getState()
-      if (!current.file) return
+      if (!current.file) throw new Error("No file selected.")
       const unlocked = await unlockPdf(current.file, current.password, (p) =>
         useUnlockStore.setState({ progress: p }),
       )
@@ -104,6 +104,7 @@ function UnlockPage() {
             name={file.name}
             meta={`${formatBytes(file.size)} · Locked`}
             locked
+            disabled={status === "loading"}
             onReplace={() => {
               useUnlockStore.setState({ file: null, status: "idle", result: null })
             }}

@@ -154,8 +154,9 @@ function CompressPage() {
                   <button
                     type="button"
                     aria-label={`Remove ${file.name}`}
+                    disabled={status === "loading"}
                     onClick={() => removeFile(index)}
-                    className="press flex size-8 shrink-0 items-center justify-center rounded-[9px] border-2 border-ink text-ink"
+                    className="press flex size-8 shrink-0 items-center justify-center rounded-[9px] border-2 border-ink text-ink disabled:opacity-30"
                   >
                     <HugeiconsIcon icon={Cancel01Icon} className="size-4" strokeWidth={2.4} />
                   </button>
@@ -164,8 +165,9 @@ function CompressPage() {
 
               <button
                 type="button"
+                disabled={status === "loading"}
                 onClick={() => inputRef.current?.click()}
-                className="flex items-center justify-center gap-2 rounded-[14px] border-2 border-dashed border-[#c9b89c] py-3 text-[13px] font-extrabold uppercase tracking-wide text-muted-ink transition-colors hover:border-ink hover:text-ink"
+                className="flex items-center justify-center gap-2 rounded-[14px] border-2 border-dashed border-[#c9b89c] py-3 text-[13px] font-extrabold uppercase tracking-wide text-muted-ink transition-colors hover:border-ink hover:text-ink disabled:opacity-30"
               >
                 <HugeiconsIcon icon={Add01Icon} className="size-4" strokeWidth={2.4} />
                 Add more files
