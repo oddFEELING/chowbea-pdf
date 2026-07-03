@@ -184,11 +184,20 @@ def _docx_to_pdf(workspace: Path, names: list[str], output: Path, dpi: int) -> N
 
 def _html_file_to_pdf(html_path: Path, output: Path, name: str) -> None:
     try:
-        from weasyprint import HTML
+        from weasyprint import HTML, default_url_fetcher
     except Exception as exc:  # noqa: BLE001 - missing system libs land here
         raise ConvertError(f"'{name}' could not be converted (engine unavailable).") from exc
+
+    def _data_only_fetcher(url: str):
+        # User-supplied documents must never trigger server-side fetches:
+        # file:// reads local files and http(s) reaches internal networks
+        # (SSRF). Inline data: URIs are the only safe resource form.
+        if url.startswith("data:"):
+            return default_url_fetcher(url)
+        raise ValueError("External resources are not fetched during conversion.")
+
     try:
-        HTML(filename=str(html_path)).write_pdf(str(output))
+        HTML(filename=str(html_path), url_fetcher=_data_only_fetcher).write_pdf(str(output))
     except Exception as exc:  # noqa: BLE001
         raise ConvertError(f"'{name}' could not be converted.") from exc
 

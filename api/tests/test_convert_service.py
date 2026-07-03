@@ -140,6 +140,20 @@ def test_txt_to_pdf_via_weasyprint(tmp_path):
     assert result_path.read_bytes()[:4] == b"%PDF"
 
 
+def test_html_to_pdf_does_not_fetch_external_resources(tmp_path):
+    pytest.importorskip("weasyprint")
+    html = (
+        b"<html><body><h1>Doc</h1>"
+        b"<img src='file:///etc/hosts'>"
+        b"<img src='http://127.0.0.1:1/x.png'>"
+        b"</body></html>"
+    )
+    names = write_inputs(tmp_path, [("page.html", html)])
+    result_path, download_name, _ = convert_files(tmp_path, names, "html", "pdf")
+    assert download_name == "page.pdf"
+    assert result_path.read_bytes()[:4] == b"%PDF"
+
+
 def test_encrypted_pdf_is_rejected_with_unlock_copy(tmp_path):
     import io
 
