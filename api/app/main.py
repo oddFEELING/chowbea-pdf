@@ -51,9 +51,13 @@ async def lifespan(app: FastAPI):
     job_queue = JobQueue(settings.rabbitmq_url, prefetch=settings.job_concurrency)
     app.state.registry = registry
     app.state.job_queue = job_queue
-    data_dir = Path(settings.data_dir)
-    data_dir.mkdir(parents=True, exist_ok=True)
-    counter = CounterStore(data_dir / "stats.json")
+    counter = None
+    try:
+        data_dir = Path(settings.data_dir)
+        data_dir.mkdir(parents=True, exist_ok=True)
+        counter = CounterStore(data_dir / "stats.json")
+    except OSError:
+        logger.warning("Data dir %s unavailable; the jobs counter is disabled", settings.data_dir)
     app.state.counter = counter
 
     async def handle(job_id: str) -> None:

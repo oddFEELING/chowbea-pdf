@@ -126,7 +126,9 @@ function JobsCounter() {
     let cancelled = false
     fetchQueueBoard()
       .then((board) => {
-        if (!cancelled) setCount(board.jobs_completed)
+        if (!cancelled && typeof board.jobs_completed === "number") {
+          setCount(board.jobs_completed)
+        }
       })
       .catch(() => {
         // A landing page shows nothing rather than an error state.
