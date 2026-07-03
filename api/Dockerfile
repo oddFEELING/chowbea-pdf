@@ -4,9 +4,17 @@ FROM python:3.12-slim
 # Bring in uv (and uvx) without a separate install step.
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Ghostscript provides the `gs` binary used by the compression service.
+# Ghostscript (`gs`) powers compression and PDF→image conversion; pandoc,
+# LibreOffice, and weasyprint's pango/cairo libs power the convert tool.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ghostscript \
+    && apt-get install -y --no-install-recommends \
+        ghostscript \
+        pandoc \
+        libreoffice-writer \
+        libpango-1.0-0 \
+        libpangocairo-1.0-0 \
+        libgdk-pixbuf-2.0-0 \
+        fonts-liberation \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
