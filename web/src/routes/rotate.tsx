@@ -31,8 +31,10 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Dropzone } from "@/components/dropzone"
 import { ToolHeader } from "@/components/tool-header"
+import { isPdfFile } from "@/lib/supported-files"
 import { cn } from "@/lib/utils"
 import { type PageCard, useRotateStore } from "@/stores/rotate"
+import { useHandoffStore } from "@/stores/handoff"
 import {
   type CompressionProgress,
   downloadBlob,
@@ -156,7 +158,7 @@ function RotatePage() {
   const { file, cards, status, result, error, progress } = useRotateStore()
   const inputRef = React.useRef<HTMLInputElement>(null)
 
-  const loadFile = React.useCallback((incoming: FileList | null) => {
+  const loadFile = React.useCallback((incoming: FileList | File[] | null) => {
     const picked = incoming?.[0]
     if (!picked) return
     const isPdf =
@@ -206,6 +208,18 @@ function RotatePage() {
               : "Couldn't read this PDF.",
         })
       })
+  }, [])
+
+  // Adopt files handed off from the landing page — only into an empty, idle
+  // page, and only take() when adopting so unclaimed files survive for a
+  // different tool choice.
+  React.useEffect(() => {
+    const state = useRotateStore.getState()
+    if (state.file !== null || state.cards.length > 0 || state.status !== "idle") return
+    const pending = useHandoffStore.getState().takeMatching(isPdfFile, 1)
+    if (pending.length > 0) loadFile(pending)
+    // Intentionally mount-only.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const sensors = useSensors(

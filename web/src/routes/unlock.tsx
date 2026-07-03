@@ -16,7 +16,9 @@ import { Progress } from "@/components/ui/progress"
 import { Dropzone } from "@/components/dropzone"
 import { FileCard } from "@/components/file-card"
 import { ToolHeader } from "@/components/tool-header"
+import { isPdfFile } from "@/lib/supported-files"
 import { useUnlockStore } from "@/stores/unlock"
+import { useHandoffStore } from "@/stores/handoff"
 import {
   type CompressionProgress,
   downloadBlob,
@@ -38,13 +40,25 @@ function UnlockPage() {
   const inputRef = React.useRef<HTMLInputElement>(null)
 
   // Keep only the first PDF picked — unlock works on a single file at a time.
-  const pickFile = React.useCallback((incoming: FileList | null) => {
+  const pickFile = React.useCallback((incoming: FileList | File[] | null) => {
     if (!incoming || incoming.length === 0) return
     const pdf = Array.from(incoming).find(
       (f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf"),
     )
     if (!pdf) return
     useUnlockStore.setState({ file: pdf, status: "idle", result: null, error: null })
+  }, [])
+
+  // Adopt files handed off from the landing page — only into an empty, idle
+  // page, and only take() when adopting so unclaimed files survive for a
+  // different tool choice.
+  React.useEffect(() => {
+    const state = useUnlockStore.getState()
+    if (state.file !== null || state.status !== "idle") return
+    const pending = useHandoffStore.getState().takeMatching(isPdfFile, 1)
+    if (pending.length > 0) pickFile(pending)
+    // Intentionally mount-only.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleUnlock = async () => {
