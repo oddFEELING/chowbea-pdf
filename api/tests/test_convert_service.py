@@ -201,3 +201,61 @@ def test_unknown_pair_is_rejected(tmp_path):
     names = write_inputs(tmp_path, [("photo.png", TINY_PNG)])
     with pytest.raises(ConvertError, match="Cannot convert image to docx"):
         convert_files(tmp_path, names, "image", "docx")
+
+
+def test_strip_external_relationships_removes_only_external(tmp_path):
+    import xml.etree.ElementTree as ElementTree
+
+    from app.services.convert import _RELS_NAMESPACE, _strip_external_relationships
+
+    rels = (
+        f'<?xml version="1.0" encoding="UTF-8"?>'
+        f'<Relationships xmlns="{_RELS_NAMESPACE}">'
+        f'<Relationship Id="rId1" Type="t" Target="styles.xml"/>'
+        f'<Relationship Id="rId2" Type="t" Target="http://127.0.0.1/x.png" TargetMode="External"/>'
+        f'<Relationship Id="rId3" Type="t" Target="file:///etc/hosts" TargetMode="External"/>'
+        f"</Relationships>"
+    )
+    docx = tmp_path / "input-0.docx"
+    with zipfile.ZipFile(docx, "w") as archive:
+        archive.writestr("word/document.xml", "<doc/>")
+        archive.writestr("word/_rels/document.xml.rels", rels)
+        # OPC part names are case-insensitive — uppercase variants must be
+        # stripped too, or a crafted docx could smuggle external links past us.
+        archive.writestr("word/_rels/HEADER.XML.RELS", rels)
+    _strip_external_relationships(docx, "input.docx")
+    with zipfile.ZipFile(docx) as archive:
+        assert "word/document.xml" in archive.namelist()
+        for rels_name in ("word/_rels/document.xml.rels", "word/_rels/HEADER.XML.RELS"):
+            root = ElementTree.fromstring(archive.read(rels_name))
+            targets = [rel.get("Target") for rel in root]
+            assert targets == ["styles.xml"], rels_name
+
+
+def test_strip_external_relationships_rejects_doctype_bomb(tmp_path):
+    from app.services.convert import ConvertError, _strip_external_relationships
+
+    bomb_rels = (
+        b'<?xml version="1.0"?>'
+        b"<!DOCTYPE lolz [<!ENTITY a \"lol\"><!ENTITY b \"&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;\">]>"
+        b"<Relationships><Relationship Id=\"rId1\" Target=\"&b;\"/></Relationships>"
+    )
+    docx = tmp_path / "input-0.docx"
+    with zipfile.ZipFile(docx, "w") as archive:
+        archive.writestr("word/document.xml", "<doc/>")
+        archive.writestr("word/_rels/document.xml.rels", bomb_rels)
+    with pytest.raises(ConvertError, match="could not be converted"):
+        _strip_external_relationships(docx, "input.docx")
+
+
+@needs_pandoc
+@needs_soffice
+def test_docx_to_pdf_still_works_with_hardening(tmp_path):
+    md_names = write_inputs(tmp_path, [("memo.md", b"# Memo\n\nHardened body.")])
+    docx_path, _, _ = convert_files(tmp_path, md_names, "md", "docx")
+    workspace2 = tmp_path / "step2"
+    workspace2.mkdir()
+    names2 = write_inputs(workspace2, [("memo.docx", docx_path.read_bytes())])
+    result_path, download_name, _ = convert_files(workspace2, names2, "docx", "pdf")
+    assert download_name == "memo.pdf"
+    assert result_path.read_bytes()[:4] == b"%PDF"

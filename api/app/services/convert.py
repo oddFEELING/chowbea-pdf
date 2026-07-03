@@ -215,12 +215,80 @@ def _pandoc(source_kind: str, target: str) -> Callable[[Path, list[str], Path, i
     return _convert
 
 
+_RELS_NAMESPACE = "http://schemas.openxmlformats.org/package/2006/relationships"
+
+
+def _reject_doctype(data: bytes) -> None:
+    """Refuse any XML payload that declares a DOCTYPE.
+
+    Legitimate OOXML .rels parts never contain one — flat
+    ``<Relationships>``/``<Relationship>`` elements only — so a DOCTYPE here
+    is the standard "billion laughs" entity-expansion vector (and the path to
+    external-DTD fetches). A crafted docx is fully attacker-controlled, so we
+    pre-scan with the raw expat parser and bail before anything is handed to
+    ElementTree, which does not itself bound entity expansion.
+    """
+    import xml.parsers.expat as expat
+
+    scanner = expat.ParserCreate()
+
+    def _found(*_args: object) -> None:
+        raise expat.ExpatError("DOCTYPE declarations are not permitted")
+
+    scanner.StartDoctypeDeclHandler = _found
+    scanner.Parse(data, True)
+
+
+def _strip_external_relationships(input_path: Path, name: str) -> None:
+    """Rewrite the docx in place with all TargetMode="External" relationships
+    removed, so LibreOffice cannot be induced to fetch linked images or other
+    remote/local resources (SSRF / file-read) while converting."""
+    import xml.etree.ElementTree as ElementTree
+    import xml.parsers.expat as expat
+
+    ElementTree.register_namespace("", _RELS_NAMESPACE)
+    stripped = input_path.with_suffix(".stripped.docx")
+    try:
+        with zipfile.ZipFile(input_path) as source, zipfile.ZipFile(
+            stripped, "w", zipfile.ZIP_DEFLATED
+        ) as target:
+            for entry in source.infolist():
+                data = source.read(entry.filename)
+                # OPC part names are case-insensitive; match .RELS variants too.
+                if entry.filename.lower().endswith(".rels"):
+                    _reject_doctype(data)
+                    root = ElementTree.fromstring(data)
+                    for rel in list(root):
+                        if rel.get("TargetMode") == "External":
+                            root.remove(rel)
+                    data = ElementTree.tostring(root, xml_declaration=True, encoding="UTF-8")
+                target.writestr(entry.filename, data)
+    except (zipfile.BadZipFile, ElementTree.ParseError, expat.ExpatError) as exc:
+        stripped.unlink(missing_ok=True)
+        raise ConvertError(f"'{name}' could not be converted.") from exc
+    stripped.replace(input_path)
+
+
+# Pre-seeded LibreOffice profile settings: never update linked content while
+# loading documents (belt to the rels-stripping braces).
+_LO_PROFILE_XCU = """<?xml version="1.0" encoding="UTF-8"?>
+<oor:items xmlns:oor="http://openoffice.org/2001/registry" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <item oor:path="/org.openoffice.Office.Writer/Content/Update"><prop oor:name="Link" oor:op="fuse"><value>0</value></prop></item>
+  <item oor:path="/org.openoffice.Office.Common/Security/Scripting"><prop oor:name="DisableActiveContent" oor:op="fuse"><value>true</value></prop></item>
+</oor:items>
+"""
+
+
 def _docx_to_pdf(workspace: Path, names: list[str], output: Path, dpi: int) -> None:
     name = names[0]
     soffice = _require("soffice", name)
     input_path = _input_paths(workspace, names)[0]
     profile = workspace / "lo-profile"
     profile.mkdir(exist_ok=True)
+    _strip_external_relationships(input_path, name)
+    profile_user = profile / "user"
+    profile_user.mkdir(parents=True, exist_ok=True)
+    (profile_user / "registrymodifications.xcu").write_text(_LO_PROFILE_XCU, encoding="utf-8")
     _run(
         [soffice, f"-env:UserInstallation=file://{profile}", "--headless",
          "--convert-to", "pdf", "--outdir", str(workspace), str(input_path)],
