@@ -136,3 +136,98 @@ def test_rotate_rejects_bad_page_payloads(client, pdf_bytes):
         )
         assert response.status_code == 400, raw
         assert response.json()["detail"] == expected_detail, raw
+
+
+from tests.test_convert_service import TINY_PNG
+
+
+def test_convert_md_to_docx_returns_202(client, registry, fake_queue):
+    response = client.post(
+        "/pdf/convert",
+        files=[("files", ("notes.md", b"# Hi", "text/markdown"))],
+        data={"target": "docx"},
+    )
+    assert response.status_code == 202
+    record = registry.get(response.json()["job_id"])
+    assert record.tool == "convert"
+    assert record.params == {"target": "docx", "names": ["notes.md"], "source_kind": "md"}
+    assert (record.workspace / "input-0.md").exists()
+
+
+def test_convert_pdf_to_png_with_dpi(client, registry, pdf_bytes):
+    response = client.post(
+        "/pdf/convert",
+        files=[("files", ("doc.pdf", pdf_bytes, "application/pdf"))],
+        data={"target": "png", "dpi": "300"},
+    )
+    assert response.status_code == 202
+    record = registry.get(response.json()["job_id"])
+    assert record.params["dpi"] == 300
+
+
+def test_convert_multiple_images_to_pdf(client, registry):
+    response = client.post(
+        "/pdf/convert",
+        files=[
+            ("files", ("a.png", TINY_PNG, "image/png")),
+            ("files", ("b.png", TINY_PNG, "image/png")),
+        ],
+        data={"target": "pdf"},
+    )
+    assert response.status_code == 202
+    record = registry.get(response.json()["job_id"])
+    assert record.params["source_kind"] == "image"
+    assert record.params["names"] == ["a.png", "b.png"]
+    assert (record.workspace / "input-1.png").exists()
+
+
+def test_convert_rejections(client, pdf_bytes):
+    cases = [
+        # multiple non-image files
+        (
+            [("files", ("a.pdf", pdf_bytes, "application/pdf")),
+             ("files", ("b.pdf", pdf_bytes, "application/pdf"))],
+            {"target": "txt"},
+            "Convert takes one file at a time (multiple images can be combined into a PDF).",
+        ),
+        # invalid pair
+        (
+            [("files", ("a.png", TINY_PNG, "image/png"))],
+            {"target": "docx"},
+            "Cannot convert image to docx.",
+        ),
+        # bad target
+        (
+            [("files", ("doc.pdf", pdf_bytes, "application/pdf"))],
+            {"target": "gif"},
+            "Invalid target format.",
+        ),
+        # dpi with a non-image target
+        (
+            [("files", ("doc.pdf", pdf_bytes, "application/pdf"))],
+            {"target": "txt", "dpi": "150"},
+            "Invalid DPI.",
+        ),
+        # dpi outside presets
+        (
+            [("files", ("doc.pdf", pdf_bytes, "application/pdf"))],
+            {"target": "png", "dpi": "90"},
+            "Invalid DPI.",
+        ),
+        # unknown extension
+        (
+            [("files", ("archive.tar", b"data", "application/x-tar"))],
+            {"target": "pdf"},
+            "Unsupported file type.",
+        ),
+        # extension/content mismatch (a "docx" that is really a PDF)
+        (
+            [("files", ("fake.docx", pdf_bytes, "application/pdf"))],
+            {"target": "pdf"},
+            "'fake.docx' does not look like a docx file.",
+        ),
+    ]
+    for files, data, detail in cases:
+        response = client.post("/pdf/convert", files=files, data=data)
+        assert response.status_code == 400, (files, data)
+        assert response.json()["detail"] == detail, (files, data)

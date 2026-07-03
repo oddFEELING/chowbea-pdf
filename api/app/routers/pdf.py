@@ -315,3 +315,126 @@ async def rotate(
         total_bytes=total_bytes,
         params={"name": _safe_name(file.filename, "document.pdf"), "pages": page_ops},
     )
+
+
+# Extension → convert-tool source kind.
+_SOURCE_KINDS = {
+    ".pdf": "pdf",
+    ".png": "image",
+    ".jpg": "image",
+    ".jpeg": "image",
+    ".docx": "docx",
+    ".md": "md",
+    ".markdown": "md",
+    ".html": "html",
+    ".htm": "html",
+    ".txt": "txt",
+}
+
+# Binary signatures per kind; text kinds instead reject NUL bytes.
+_MAGIC_PREFIXES = {
+    "pdf": (b"%PDF",),
+    "image": (b"\x89PNG\r\n\x1a\n", b"\xff\xd8\xff"),
+    "docx": (b"PK\x03\x04",),
+}
+
+_CONVERT_TARGETS = {"pdf", "docx", "md", "html", "txt", "png", "jpeg"}
+_ALLOWED_PAIRS = {
+    "pdf": {"png", "jpeg", "docx", "md", "txt"},
+    "image": {"pdf"},
+    "docx": {"pdf", "md", "html", "txt"},
+    "md": {"pdf", "html", "docx", "txt"},
+    "html": {"pdf", "md", "docx", "txt"},
+    "txt": {"pdf", "md", "html", "docx"},
+}
+_DPI_PRESETS = {72, 150, 300}
+
+
+async def _stream_source_to_disk(file: UploadFile, dest: Path, kind: str, name: str) -> None:
+    """Write any supported source file to disk with kind-aware validation.
+
+    Binary kinds are checked by magic bytes; text kinds must not contain NUL
+    bytes in the first chunk. Size cap and empty check match the PDF validator.
+    """
+    mismatch = HTTPException(
+        status_code=400, detail=f"'{name}' does not look like a {kind} file."
+    )
+    size = 0
+    is_first_chunk = True
+    with dest.open("wb") as out:
+        while True:
+            chunk = await file.read(_CHUNK_SIZE)
+            if not chunk:
+                break
+            if is_first_chunk:
+                prefixes = _MAGIC_PREFIXES.get(kind)
+                if prefixes is not None:
+                    if not any(chunk.startswith(p) for p in prefixes):
+                        raise mismatch
+                elif b"\x00" in chunk:
+                    raise mismatch
+                is_first_chunk = False
+            size += len(chunk)
+            if size > _MAX_UPLOAD_BYTES:
+                raise HTTPException(
+                    status_code=413,
+                    detail=f"'{name}' exceeds the {settings.max_upload_mb} MB limit.",
+                )
+            out.write(chunk)
+    if size == 0:
+        raise HTTPException(status_code=400, detail=f"'{name}' is empty.")
+
+
+@router.post(
+    "/convert",
+    status_code=202,
+    summary="Queue a file conversion",
+    response_model=JobAccepted,
+)
+async def convert(
+    request: Request,
+    files: List[UploadFile] = File(..., description="The file to convert (multiple images may combine into one PDF)."),
+    target: str = Form(..., description="Target format: pdf, docx, md, html, txt, png, or jpeg."),
+    dpi: int | None = Form(None, description="Resolution for png/jpeg targets: 72, 150, or 300."),
+) -> JobAccepted:
+    """Validate the upload(s) and conversion pair, then queue a convert job."""
+    if target not in _CONVERT_TARGETS:
+        raise HTTPException(status_code=400, detail="Invalid target format.")
+    if dpi is not None and (target not in ("png", "jpeg") or dpi not in _DPI_PRESETS):
+        raise HTTPException(status_code=400, detail="Invalid DPI.")
+
+    names = [_safe_name(f.filename, f"document-{i + 1}") for i, f in enumerate(files)]
+    kinds = [_SOURCE_KINDS.get(Path(name).suffix.lower()) for name in names]
+    if any(kind is None for kind in kinds):
+        raise HTTPException(status_code=400, detail="Unsupported file type.")
+    source_kind = kinds[0]
+    if len(files) > 1 and not (all(k == "image" for k in kinds) and target == "pdf"):
+        raise HTTPException(
+            status_code=400,
+            detail="Convert takes one file at a time (multiple images can be combined into a PDF).",
+        )
+    if target not in _ALLOWED_PAIRS[source_kind]:
+        raise HTTPException(status_code=400, detail=f"Cannot convert {source_kind} to {target}.")
+
+    work_dir = Path(tempfile.mkdtemp(prefix="chowbea-convert-"))
+    try:
+        total_bytes = 0
+        for index, (file, name, kind) in enumerate(zip(files, names, kinds)):
+            input_path = work_dir / f"input-{index}{Path(name).suffix.lower()}"
+            await _stream_source_to_disk(file, input_path, kind, name)
+            total_bytes += input_path.stat().st_size
+    except Exception:
+        shutil.rmtree(work_dir, ignore_errors=True)
+        raise
+
+    params: dict[str, Any] = {"target": target, "names": names, "source_kind": source_kind}
+    if dpi is not None:
+        params["dpi"] = dpi
+    return await _accept_job(
+        request,
+        tool="convert",
+        workspace=work_dir,
+        file_count=len(names),
+        total_bytes=total_bytes,
+        params=params,
+    )
