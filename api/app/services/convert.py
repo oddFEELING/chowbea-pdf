@@ -10,8 +10,11 @@ missing engine fails the individual job, never the process.
 from __future__ import annotations
 
 import html as html_module
+import os
 import shutil
+import signal
 import subprocess
+import sys
 import zipfile
 from pathlib import Path
 from typing import Callable
@@ -19,6 +22,42 @@ from typing import Callable
 import pikepdf
 
 _TIMEOUT_SECONDS = 180
+
+# In-process engines (pdf2docx, pdfminer, weasyprint) historically hang on
+# pathological inputs. Running them as child processes puts them under the
+# same 180s kill switch as the external engines. Exit code 3 = import failed
+# (engine unavailable on this host).
+_PDF2DOCX_SHIM = """
+import sys
+try:
+    from pdf2docx import Converter
+except ImportError:
+    sys.exit(3)
+converter = Converter(sys.argv[1])
+try:
+    converter.convert(sys.argv[2])
+finally:
+    converter.close()
+"""
+
+_PDFMINER_SHIM = """
+import pathlib, sys
+try:
+    from pdfminer.high_level import extract_text
+except ImportError:
+    sys.exit(3)
+pathlib.Path(sys.argv[2]).write_text(extract_text(sys.argv[1]) or "", encoding="utf-8")
+"""
+
+_WEASYPRINT_SHIM = """
+import sys
+try:
+    from app.services.convert import _data_only_url_fetcher
+    from weasyprint import HTML
+except (ImportError, OSError):
+    sys.exit(3)
+HTML(filename=sys.argv[1], url_fetcher=_data_only_url_fetcher).write_pdf(sys.argv[2])
+"""
 
 _MEDIA_TYPES = {
     "pdf": "application/pdf",
@@ -46,10 +85,28 @@ def _require(binary: str, name: str) -> str:
 
 def _run(cmd: list[str], name: str) -> None:
     try:
-        completed = subprocess.run(cmd, capture_output=True, timeout=_TIMEOUT_SECONDS)
-    except subprocess.TimeoutExpired as exc:
-        raise ConvertError(f"'{name}' took too long to convert.") from exc
-    if completed.returncode != 0:
+        process = subprocess.Popen(
+            cmd,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            # Own session so a timeout can kill the whole process tree
+            # (LibreOffice's soffice wrapper spawns soffice.bin).
+            start_new_session=True,
+        )
+    except OSError as exc:
+        raise ConvertError(f"'{name}' could not be converted.") from exc
+    try:
+        returncode = process.wait(timeout=_TIMEOUT_SECONDS)
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(os.getpgid(process.pid), signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        process.wait()
+        raise ConvertError(f"'{name}' took too long to convert.") from None
+    if returncode == 3:
+        raise ConvertError(f"'{name}' could not be converted (engine unavailable).")
+    if returncode != 0:
         raise ConvertError(f"'{name}' could not be converted.")
 
 
@@ -123,31 +180,14 @@ def _pdf_to_docx(workspace: Path, names: list[str], output: Path, dpi: int) -> N
     name = names[0]
     input_path = _input_paths(workspace, names)[0]
     _check_pdf_readable(input_path, name)
-    from pdf2docx import Converter
-
-    try:
-        converter = Converter(str(input_path))
-        try:
-            converter.convert(str(output))
-        finally:
-            converter.close()
-    except ConvertError:
-        raise
-    except Exception as exc:  # noqa: BLE001 - engine internals vary widely
-        raise ConvertError(f"'{name}' could not be converted.") from exc
+    _run([sys.executable, "-c", _PDF2DOCX_SHIM, str(input_path), str(output)], name)
 
 
 def _pdf_to_text(workspace: Path, names: list[str], output: Path, dpi: int) -> None:
     name = names[0]
     input_path = _input_paths(workspace, names)[0]
     _check_pdf_readable(input_path, name)
-    from pdfminer.high_level import extract_text
-
-    try:
-        text = extract_text(str(input_path)) or ""
-    except Exception as exc:  # noqa: BLE001
-        raise ConvertError(f"'{name}' could not be converted.") from exc
-    output.write_text(text, encoding="utf-8")
+    _run([sys.executable, "-c", _PDFMINER_SHIM, str(input_path), str(output)], name)
 
 
 def _pandoc(source_kind: str, target: str) -> Callable[[Path, list[str], Path, int], None]:
@@ -199,15 +239,7 @@ def _data_only_url_fetcher(url: str):
 
 
 def _html_file_to_pdf(html_path: Path, output: Path, name: str) -> None:
-    try:
-        from weasyprint import HTML
-    except Exception as exc:  # noqa: BLE001 - missing system libs land here
-        raise ConvertError(f"'{name}' could not be converted (engine unavailable).") from exc
-
-    try:
-        HTML(filename=str(html_path), url_fetcher=_data_only_url_fetcher).write_pdf(str(output))
-    except Exception as exc:  # noqa: BLE001
-        raise ConvertError(f"'{name}' could not be converted.") from exc
+    _run([sys.executable, "-c", _WEASYPRINT_SHIM, str(html_path), str(output)], name)
 
 
 def _html_to_pdf(workspace: Path, names: list[str], output: Path, dpi: int) -> None:

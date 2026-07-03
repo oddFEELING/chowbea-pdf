@@ -273,3 +273,22 @@ def test_convert_rejects_late_nul_bytes_in_text(client):
     )
     assert response.status_code == 400
     assert response.json()["detail"] == "'notes.txt' does not look like a txt file."
+
+
+def test_convert_rejects_docx_with_absurd_entry_count(client):
+    fake = b"PK\x03\x04" + b"\x00" * 32 + b"PK\x05\x06" + b"\x00" * 4 + (60000).to_bytes(2, "little") * 2 + b"\x00" * 10
+    response = client.post(
+        "/pdf/convert",
+        files=[("files", ("bomb.docx", fake, "application/octet-stream"))],
+        data={"target": "pdf"},
+    )
+    assert response.status_code == 400
+    assert response.json()["detail"] == "'bomb.docx' does not look like a docx file."
+
+
+def test_allowed_pairs_match_service_registry():
+    from app.routers.pdf import _ALLOWED_PAIRS
+    from app.services.convert import _CONVERTERS
+
+    router_pairs = {(kind, target) for kind, targets in _ALLOWED_PAIRS.items() for target in targets}
+    assert router_pairs == set(_CONVERTERS)

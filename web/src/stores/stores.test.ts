@@ -8,6 +8,7 @@ describe("tool stores", () => {
   beforeEach(() => {
     useCompressStore.getState().reset()
     useRotateStore.getState().reset()
+    useConvertStore.getState().reset()
   })
 
   it("holds state outside React, so it survives page unmounts", () => {

@@ -145,3 +145,13 @@ review → PR → checks → merge → auto-deploy (api image grows ~500–600 M
 expect a noticeably longer first build) → curl-based prod verification
 (submit md→pdf and pdf→png jobs, verify outputs by magic bytes; `/convert`
 page 200).
+
+## Accepted deviations & tracked residual risk (final review)
+
+- `dpi` with a non-numeric value returns FastAPI's standard 422 rather than
+  the 400 "Invalid DPI." — accepted; the web client only sends preset ints.
+- **Tracked fast-follow:** LibreOffice (docx→pdf) is the one engine that may
+  resolve externally-linked images in crafted .docx files (SSRF class). Its
+  process group is killed on timeout, but link fetching is not yet disabled;
+  follow-up: seed the per-job profile with link-updating disabled or deny
+  network egress to the subprocess.

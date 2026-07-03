@@ -122,33 +122,27 @@ function ConvertPage() {
     if (supported.length === 0) return
     useConvertStore.setState((state) => {
       const firstKind = state.files.length > 0 ? kindOf(state.files[0]) : kindOf(supported[0])
-      // Images accumulate (they combine into one PDF); anything else replaces.
-      if (firstKind !== "image" || supported.some((f) => kindOf(f) !== "image")) {
-        const file = supported[0]
-        const kind = kindOf(file)!
-        return {
-          files: [file],
-          target: kind === "image" ? ("pdf" as ConvertTarget) : null,
-          status: "idle" as const,
-          result: null,
-          error: null,
+      if (firstKind === "image" && state.files.length > 0) {
+        const incomingImages = supported.filter((f) => kindOf(f) === "image")
+        if (incomingImages.length === 0) return state
+        const seen = new Set(state.files.map((f) => `${f.name}:${f.size}`))
+        const unique: File[] = []
+        for (const file of incomingImages) {
+          const key = `${file.name}:${file.size}`
+          if (seen.has(key)) continue
+          seen.add(key)
+          unique.push(file)
         }
+        return { files: [...state.files, ...unique], target: "pdf" as ConvertTarget, status: "idle" as const, result: null, error: null }
       }
-      const seen = new Set(state.files.map((f) => `${f.name}:${f.size}`))
-      const unique: File[] = []
-      for (const file of supported) {
-        const key = `${file.name}:${file.size}`
-        if (seen.has(key)) continue
-        seen.add(key)
-        unique.push(file)
+      // Fresh selection (or replacing a non-image): single non-image file, or an all-image batch.
+      const incomingImages = supported.filter((f) => kindOf(f) === "image")
+      if (incomingImages.length === supported.length && supported.length > 0) {
+        return { files: incomingImages, target: "pdf" as ConvertTarget, status: "idle" as const, result: null, error: null }
       }
-      return {
-        files: [...state.files, ...unique],
-        target: "pdf" as ConvertTarget,
-        status: "idle" as const,
-        result: null,
-        error: null,
-      }
+      const file = supported[0]
+      const kind = kindOf(file)!
+      return { files: [file], target: kind === "image" ? ("pdf" as ConvertTarget) : null, status: "idle" as const, result: null, error: null }
     })
   }, [])
 
@@ -209,7 +203,7 @@ function ConvertPage() {
       <input
         ref={inputRef}
         type="file"
-        accept={ACCEPT}
+        accept={isImageBatch ? ".png,.jpg,.jpeg" : ACCEPT}
         multiple
         className="hidden"
         onChange={(event) => addFiles(event.target.files)}

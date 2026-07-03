@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
+import os
 import shutil
 import tempfile
 import zipfile
@@ -350,6 +352,32 @@ _ALLOWED_PAIRS = {
 }
 _DPI_PRESETS = {72, 150, 300}
 
+_MAX_DOCX_ENTRIES = 10_000
+
+
+def _looks_like_docx(dest: Path) -> bool:
+    """Cheap, bounded check that a ZIP is a real Word document.
+
+    Reads the end-of-central-directory record first and rejects absurd entry
+    counts, so a crafted central directory can't burn CPU/RAM during parsing.
+    """
+    with dest.open("rb") as handle:
+        handle.seek(0, os.SEEK_END)
+        size = handle.tell()
+        handle.seek(max(0, size - 65_536))
+        tail = handle.read()
+    eocd = tail.rfind(b"PK\x05\x06")
+    if eocd == -1 or len(tail) < eocd + 12:
+        return False
+    total_entries = int.from_bytes(tail[eocd + 10 : eocd + 12], "little")
+    if total_entries > _MAX_DOCX_ENTRIES:
+        return False
+    try:
+        with zipfile.ZipFile(dest) as archive:
+            return "word/document.xml" in archive.namelist()
+    except zipfile.BadZipFile:
+        return False
+
 
 async def _stream_source_to_disk(file: UploadFile, dest: Path, kind: str, name: str) -> None:
     """Write any supported source file to disk with kind-aware validation.
@@ -370,6 +398,7 @@ async def _stream_source_to_disk(file: UploadFile, dest: Path, kind: str, name: 
             prefixes = _MAGIC_PREFIXES.get(kind)
             if is_first_chunk and prefixes is not None and not any(chunk.startswith(p) for p in prefixes):
                 raise mismatch
+            # NUL bytes reject UTF-16/binary masquerading as text; UTF-8 is the supported text encoding.
             if prefixes is None and b"\x00" in chunk:
                 raise mismatch
             is_first_chunk = False
@@ -382,13 +411,8 @@ async def _stream_source_to_disk(file: UploadFile, dest: Path, kind: str, name: 
             out.write(chunk)
     if size == 0:
         raise HTTPException(status_code=400, detail=f"'{name}' is empty.")
-    if kind == "docx":
-        try:
-            with zipfile.ZipFile(dest) as archive:
-                if "word/document.xml" not in archive.namelist():
-                    raise mismatch
-        except zipfile.BadZipFile:
-            raise mismatch from None
+    if kind == "docx" and not await asyncio.to_thread(_looks_like_docx, dest):
+        raise mismatch
 
 
 @router.post(
@@ -404,6 +428,8 @@ async def convert(
     dpi: int | None = Form(None, description="Resolution for png/jpeg targets: 72, 150, or 300."),
 ) -> JobAccepted:
     """Validate the upload(s) and conversion pair, then queue a convert job."""
+    if not files:
+        raise HTTPException(status_code=400, detail="No files were uploaded.")
     if target not in _CONVERT_TARGETS:
         raise HTTPException(status_code=400, detail="Invalid target format.")
     if dpi is not None and (target not in ("png", "jpeg") or dpi not in _DPI_PRESETS):
