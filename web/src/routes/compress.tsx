@@ -17,10 +17,10 @@ import { Progress } from "@/components/ui/progress"
 import { Dropzone } from "@/components/dropzone"
 import { ToolHeader } from "@/components/tool-header"
 import { cn } from "@/lib/utils"
+import { useCompressStore } from "@/stores/compress"
 import {
   type CompressionProgress,
   type CompressionQuality,
-  type CompressionResult,
   compressPdfs,
   downloadBlob,
   formatBytes,
@@ -48,15 +48,8 @@ const QUALITY_OPTIONS: Array<{
   { value: "prepress", label: "Maximum", hint: "Print-ready, barely trimmed", dpi: "300 dpi+" },
 ]
 
-type Status = "idle" | "loading" | "success" | "error"
-
 function CompressPage() {
-  const [files, setFiles] = React.useState<File[]>([])
-  const [quality, setQuality] = React.useState<CompressionQuality>("ebook")
-  const [status, setStatus] = React.useState<Status>("idle")
-  const [result, setResult] = React.useState<CompressionResult | null>(null)
-  const [error, setError] = React.useState<string | null>(null)
-  const [progress, setProgress] = React.useState<CompressionProgress | null>(null)
+  const { files, quality, status, result, error, progress } = useCompressStore()
   const inputRef = React.useRef<HTMLInputElement>(null)
 
   // Merge newly picked files into state, keeping only PDFs and skipping duplicates.
@@ -65,37 +58,36 @@ function CompressPage() {
     const pdfs = Array.from(incoming).filter(
       (file) => file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf"),
     )
-    setFiles((current) => {
-      const seen = new Set(current.map((f) => `${f.name}:${f.size}`))
+    useCompressStore.setState((state) => {
+      const seen = new Set(state.files.map((f) => `${f.name}:${f.size}`))
       const unique = pdfs.filter((f) => !seen.has(`${f.name}:${f.size}`))
-      return [...current, ...unique]
+      return { files: [...state.files, ...unique] }
     })
-    setStatus("idle")
-    setResult(null)
-    setError(null)
+    useCompressStore.setState({ status: "idle", result: null, error: null })
   }, [])
 
   const removeFile = (index: number) => {
-    setFiles((current) => current.filter((_, i) => i !== index))
-    setStatus("idle")
-    setResult(null)
+    useCompressStore.setState((state) => ({ files: state.files.filter((_, i) => i !== index) }))
+    useCompressStore.setState({ status: "idle", result: null })
   }
 
   const handleCompress = async () => {
     if (files.length === 0) return
-    setStatus("loading")
-    setError(null)
-    setResult(null)
-    setProgress({ phase: "uploading", percent: 0 })
+    useCompressStore.setState({ status: "loading", error: null, result: null, progress: { phase: "uploading", percent: 0 } })
     try {
-      const compressed = await compressPdfs(files, quality, setProgress)
-      setResult(compressed)
-      setStatus("success")
+      const compressed = await compressPdfs(
+        useCompressStore.getState().files,
+        useCompressStore.getState().quality,
+        (p) => useCompressStore.setState({ progress: p }),
+      )
+      useCompressStore.setState({ result: compressed, status: "success" })
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.")
-      setStatus("error")
+      useCompressStore.setState({
+        error: err instanceof Error ? err.message : "Something went wrong.",
+        status: "error",
+      })
     } finally {
-      setProgress(null)
+      useCompressStore.setState({ progress: null })
     }
   }
 
@@ -194,7 +186,7 @@ function CompressPage() {
                 <button
                   key={option.value}
                   type="button"
-                  onClick={() => setQuality(option.value)}
+                  onClick={() => useCompressStore.setState({ quality: option.value })}
                   className={cn(
                     "flex items-center gap-3.5 rounded-[14px] border-2 border-ink p-4 text-left transition-[background-color,box-shadow]",
                     selected ? "bg-surface shadow-amber-sm" : "bg-card hover:bg-surface",
