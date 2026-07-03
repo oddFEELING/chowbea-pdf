@@ -14,6 +14,7 @@ import { Route as RotateRouteImport } from './routes/rotate'
 import { Route as QueueRouteImport } from './routes/queue'
 import { Route as MergeRouteImport } from './routes/merge'
 import { Route as LockRouteImport } from './routes/lock'
+import { Route as ConvertRouteImport } from './routes/convert'
 import { Route as CompressRouteImport } from './routes/compress'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -42,6 +43,11 @@ const LockRoute = LockRouteImport.update({
   path: '/lock',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConvertRoute = ConvertRouteImport.update({
+  id: '/convert',
+  path: '/convert',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CompressRoute = CompressRouteImport.update({
   id: '/compress',
   path: '/compress',
@@ -56,6 +62,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/compress': typeof CompressRoute
+  '/convert': typeof ConvertRoute
   '/lock': typeof LockRoute
   '/merge': typeof MergeRoute
   '/queue': typeof QueueRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/compress': typeof CompressRoute
+  '/convert': typeof ConvertRoute
   '/lock': typeof LockRoute
   '/merge': typeof MergeRoute
   '/queue': typeof QueueRoute
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/compress': typeof CompressRoute
+  '/convert': typeof ConvertRoute
   '/lock': typeof LockRoute
   '/merge': typeof MergeRoute
   '/queue': typeof QueueRoute
@@ -86,17 +95,27 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/compress'
+    | '/convert'
     | '/lock'
     | '/merge'
     | '/queue'
     | '/rotate'
     | '/unlock'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/compress' | '/lock' | '/merge' | '/queue' | '/rotate' | '/unlock'
+  to:
+    | '/'
+    | '/compress'
+    | '/convert'
+    | '/lock'
+    | '/merge'
+    | '/queue'
+    | '/rotate'
+    | '/unlock'
   id:
     | '__root__'
     | '/'
     | '/compress'
+    | '/convert'
     | '/lock'
     | '/merge'
     | '/queue'
@@ -107,6 +126,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CompressRoute: typeof CompressRoute
+  ConvertRoute: typeof ConvertRoute
   LockRoute: typeof LockRoute
   MergeRoute: typeof MergeRoute
   QueueRoute: typeof QueueRoute
@@ -151,6 +171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LockRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/convert': {
+      id: '/convert'
+      path: '/convert'
+      fullPath: '/convert'
+      preLoaderRoute: typeof ConvertRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/compress': {
       id: '/compress'
       path: '/compress'
@@ -171,6 +198,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CompressRoute: CompressRoute,
+  ConvertRoute: ConvertRoute,
   LockRoute: LockRoute,
   MergeRoute: MergeRoute,
   QueueRoute: QueueRoute,

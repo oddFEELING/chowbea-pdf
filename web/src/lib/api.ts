@@ -236,6 +236,50 @@ export async function rotatePdf(
   }
 }
 
+/** Formats the convert tool can produce. */
+export const CONVERT_TARGETS = ["pdf", "docx", "md", "html", "txt", "png", "jpeg"] as const
+
+export type ConvertTarget = (typeof CONVERT_TARGETS)[number]
+
+/** Result of a successful convert request. */
+export interface ConvertResult {
+  /** The converted file (or a ZIP of page images). */
+  blob: Blob
+  /** Suggested download filename parsed from the response. */
+  filename: string
+}
+
+/**
+ * Convert file(s) to the target format. Multiple files are allowed only when
+ * they are images being combined into a single PDF (array order = page order).
+ *
+ * @throws Error with the API's error detail on failure.
+ */
+export async function convertFiles(
+  files: File[],
+  target: ConvertTarget,
+  dpi: number | null,
+  onProgress?: (progress: CompressionProgress) => void,
+): Promise<ConvertResult> {
+  const form = new FormData()
+  for (const file of files) {
+    form.append("files", file)
+  }
+  form.append("target", target)
+  if (dpi !== null) {
+    form.append("dpi", String(dpi))
+  }
+  const download = await runJobFlow({
+    tool: "convert",
+    submit: () => submitForm("/pdf/convert", form, onProgress),
+    onProgress,
+  })
+  return {
+    blob: download.blob,
+    filename: download.filename ?? "converted",
+  }
+}
+
 /** Trigger a browser download for a Blob. */
 export function downloadBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob)

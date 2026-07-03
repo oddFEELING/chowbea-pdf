@@ -10,6 +10,10 @@ dependencies = [
     "pydantic-settings==2.7.1",
     "pikepdf==9.5.2",
     "aio-pika==9.6.2",
+    "img2pdf==0.6.3",
+    "pdf2docx==0.5.13",
+    "weasyprint==69.0",
+    "pdfminer-six==20260107",
 ]
 
 # No [build-system]: this is an application, not a distributable package, so uv

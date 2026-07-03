@@ -33,6 +33,7 @@ from app.services.unlock import (
 )
 from app.services.merge import MergeError, merge_pdf_files
 from app.services.rotate import RotateError, rearrange_pdf_file
+from app.services.convert import ConvertError, convert_files
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +49,7 @@ _KNOWN_ERRORS = (
     UnlockError,
     MergeError,
     RotateError,
+    ConvertError,
 )
 
 
@@ -131,7 +133,20 @@ def _run_rotate(record: JobRecord) -> None:
     record.media_type = "application/pdf"
 
 
-_RUNNERS = {"compress": _run_compress, "lock": _run_lock, "unlock": _run_unlock, "merge": _run_merge, "rotate": _run_rotate}
+def _run_convert(record: JobRecord) -> None:
+    result_path, download_name, media_type = convert_files(
+        record.workspace,
+        record.params["names"],
+        record.params["source_kind"],
+        record.params["target"],
+        record.params.get("dpi") or 150,
+    )
+    record.result_path = result_path
+    record.download_name = download_name
+    record.media_type = media_type
+
+
+_RUNNERS = {"compress": _run_compress, "lock": _run_lock, "unlock": _run_unlock, "merge": _run_merge, "rotate": _run_rotate, "convert": _run_convert}
 
 
 def run_job(record: JobRecord) -> None:
