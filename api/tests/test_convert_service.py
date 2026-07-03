@@ -220,12 +220,16 @@ def test_strip_external_relationships_removes_only_external(tmp_path):
     with zipfile.ZipFile(docx, "w") as archive:
         archive.writestr("word/document.xml", "<doc/>")
         archive.writestr("word/_rels/document.xml.rels", rels)
+        # OPC part names are case-insensitive — uppercase variants must be
+        # stripped too, or a crafted docx could smuggle external links past us.
+        archive.writestr("word/_rels/HEADER.XML.RELS", rels)
     _strip_external_relationships(docx, "input.docx")
     with zipfile.ZipFile(docx) as archive:
         assert "word/document.xml" in archive.namelist()
-        root = ElementTree.fromstring(archive.read("word/_rels/document.xml.rels"))
-        targets = [rel.get("Target") for rel in root]
-        assert targets == ["styles.xml"]
+        for rels_name in ("word/_rels/document.xml.rels", "word/_rels/HEADER.XML.RELS"):
+            root = ElementTree.fromstring(archive.read(rels_name))
+            targets = [rel.get("Target") for rel in root]
+            assert targets == ["styles.xml"], rels_name
 
 
 def test_strip_external_relationships_rejects_doctype_bomb(tmp_path):

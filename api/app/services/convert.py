@@ -254,7 +254,8 @@ def _strip_external_relationships(input_path: Path, name: str) -> None:
         ) as target:
             for entry in source.infolist():
                 data = source.read(entry.filename)
-                if entry.filename.endswith(".rels"):
+                # OPC part names are case-insensitive; match .RELS variants too.
+                if entry.filename.lower().endswith(".rels"):
                     _reject_doctype(data)
                     root = ElementTree.fromstring(data)
                     for rel in list(root):
