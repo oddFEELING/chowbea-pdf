@@ -136,3 +136,23 @@ def test_rotate_job_succeeds(tmp_path):
     assert record.result_path is not None and record.result_path.exists()
     assert record.download_name == "rotated-report.pdf"
     assert record.media_type == "application/pdf"
+
+
+def test_convert_job_succeeds_with_engine_free_pair(tmp_path):
+    registry = JobRegistry()
+    workspace = tmp_path / "job"
+    workspace.mkdir()
+    write_blank_pdf(workspace / "input-0.pdf")
+    record = registry.create(
+        tool="convert",
+        workspace=workspace,
+        file_count=1,
+        total_bytes=(workspace / "input-0.pdf").stat().st_size,
+        params={"target": "txt", "names": ["doc.pdf"], "source_kind": "pdf"},
+    )
+    asyncio.run(execute_job(registry, record.id))
+    assert record.status is JobStatus.done
+    assert record.error is None
+    assert record.download_name == "doc.txt"
+    assert record.media_type == "text/plain"
+    assert record.result_path is not None and record.result_path.exists()
