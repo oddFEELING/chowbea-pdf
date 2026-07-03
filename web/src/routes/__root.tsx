@@ -9,8 +9,9 @@ import {
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { File01Icon } from "@hugeicons/core-free-icons"
+import { File01Icon, GithubIcon } from "@hugeicons/core-free-icons"
 
+import { JobsCounter } from "@/components/jobs-counter"
 import { resolveQueueToggle } from "@/lib/queue-toggle"
 import appCss from "../styles.css?url"
 
@@ -110,10 +111,22 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <div className="min-h-svh bg-cream">
           <div className="mx-auto flex min-h-svh w-full max-w-7xl flex-col px-5 py-7 sm:px-8 sm:py-9 lg:px-10">
-            {/* Top bar: wordmark left, queue link right. */}
+            {/* Top bar: wordmark left; jobs count, GitHub, and queue right. */}
             <header className="flex items-center justify-between">
               <Wordmark />
-              <QueueLink />
+              <div className="flex items-center gap-3">
+                <JobsCounter />
+                <a
+                  href="https://github.com/oddFEELING/chowbea-pdf"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="View the source and contribute on GitHub"
+                  className="press flex size-[42px] items-center justify-center rounded-full border-2 border-ink bg-card text-ink shadow-block-sm"
+                >
+                  <HugeiconsIcon icon={GithubIcon} className="size-5" strokeWidth={2.2} />
+                </a>
+                <QueueLink />
+              </div>
             </header>
 
             <main className="flex-1">{children}</main>
