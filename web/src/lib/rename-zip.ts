@@ -1,5 +1,23 @@
 import { unzipSync, zipSync } from "fflate"
 
+/** Extract trailing `-{n}.pdf` part index for stable numeric ordering. */
+function partIndexFromEntry(name: string): number | null {
+  const match = name.match(/-(\d+)\.pdf$/i)
+  return match ? Number(match[1]) : null
+}
+
+/** Order ZIP entries by part number so `stem-2` stays before `stem-10`. */
+function sortZipEntryKeys(keys: string[]): string[] {
+  return [...keys].sort((a, b) => {
+    const indexA = partIndexFromEntry(a)
+    const indexB = partIndexFromEntry(b)
+    if (indexA !== null && indexB !== null) return indexA - indexB
+    if (indexA !== null) return -1
+    if (indexB !== null) return 1
+    return a.localeCompare(b)
+  })
+}
+
 /**
  * Unzip `blob`, rename entries in sorted original order to `names`, re-zip.
  * `names.length` must equal the number of files in the archive.
@@ -7,7 +25,7 @@ import { unzipSync, zipSync } from "fflate"
 export async function renameZipEntries(blob: Blob, names: string[]): Promise<Blob> {
   const bytes = new Uint8Array(await blob.arrayBuffer())
   const entries = unzipSync(bytes)
-  const keys = Object.keys(entries).sort()
+  const keys = sortZipEntryKeys(Object.keys(entries))
   if (keys.length !== names.length) {
     throw new Error("File count does not match the rename list.")
   }
